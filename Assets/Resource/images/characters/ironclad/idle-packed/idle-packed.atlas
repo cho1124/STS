@@ -1,0 +1,13 @@
+
+idle-packed.png
+size: 497,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+skeleton
+  rotate: false
+  xy: 2, 2
+  size: 493, 252
+  orig: 497, 256
+  offset: 2, 2
+  index: -1

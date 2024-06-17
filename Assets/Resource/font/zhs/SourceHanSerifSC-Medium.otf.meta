@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: c3d8f8ce58ba6c34f838ee47683ebb06
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Source Han Serif SC
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 51a5b2ea8c6a1734284e4b4ced43654c, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
