@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
-
 public class PlayerDeck : MonoBehaviour
 {
     
@@ -15,14 +14,14 @@ public class PlayerDeck : MonoBehaviour
 
     public GameObject cardPrefab;
 
-    public Transform leftHandTr;
-    public Transform RightHandTr;
+    public RectTransform leftHandTr;
+    public RectTransform RightHandTr;
 
     public int baseDraw = 5;
 
     public Text DeckCountText;
     
-
+    
 
 
     void Start()
@@ -31,8 +30,8 @@ public class PlayerDeck : MonoBehaviour
         //PlayerDeckManager.Instance.InitializeDeck();
         //Deck.Add(CardDatabase.cardList[1]); // 예시로 두 번째 카드를 마지막으로 추가
 
-        
 
+        
         MakeCard();
         Shuffle();
         DrawInitialHand();
@@ -50,7 +49,7 @@ public class PlayerDeck : MonoBehaviour
 
             if(playerHand.handCards.Count > 0)
             {
-                DiscardCard(playerHand.handCards[playerHand.handCards.Count - 1]);
+                DiscardCard(playerHand.handCards[0]);
 
             }
             else
@@ -111,18 +110,18 @@ public class PlayerDeck : MonoBehaviour
 
         if (Deck.Count > 0)
         {
-            Transform playerHandTransform = playerHand.transform;
+            RectTransform playerHandTransform = playerHand.GetComponent<RectTransform>();
 
             // Assuming drawnCard is the GameObject representing the card
             GameObject drawnCard = Deck[0]; // Get the card GameObject from Deck list
-            drawnCard.SetActive(true);
             Deck.RemoveAt(0);
+            drawnCard.SetActive(true);
             playerHand.AddCard(drawnCard);
 
             //playerHand.
             //playerHand
-            Debug.Log(playerHand.transform.rotation);
-            drawnCard.transform.SetParent(playerHandTransform); // Use false to keep the local position unchanged
+            RectTransform drawnCardRectTransform = drawnCard.GetComponent<RectTransform>();
+            drawnCardRectTransform.SetParent(playerHandTransform);
             //drawnCard.transform.DOMove(playerHand.transform.position, 1f);
             //drawnCard.transform.DORotate(playerHand.transform.rotation, 1f);
             // Set the parent to playerHandTransform
@@ -142,78 +141,75 @@ public class PlayerDeck : MonoBehaviour
 
     void cardAllignment()
     {
-        List<Transform> orginalTransform = new List<Transform>();
+        List<RectTransform> originalRectTransforms = RoundAlignmentUI(RightHandTr, leftHandTr, playerHand.handCards.Count, 0.5f);
 
-        orginalTransform = RoundAlignment(leftHandTr, RightHandTr, playerHand.handCards.Count, 0.5f);
-
-
+        // 카드 이동 및 회전 애니메이션 적용
         for (int i = 0; i < playerHand.handCards.Count; i++)
         {
             GameObject targetCard = playerHand.handCards[i];
-            targetCard.transform.position = orginalTransform[i].position;
-            targetCard.transform.rotation = orginalTransform[i].rotation;
+            RectTransform targetRectTransform = targetCard.GetComponent<RectTransform>();
 
-            targetCard.transform.DOMove(targetCard.transform.position, 1f);
-            targetCard.transform.DORotateQuaternion(targetCard.transform.rotation, 1f);
+            // 카드 위치와 회전 설정
+            targetRectTransform.anchoredPosition = originalRectTransforms[i].anchoredPosition;
+            targetRectTransform.localRotation = originalRectTransforms[i].localRotation;
 
+            // 애니메이션 적용
+            targetRectTransform.DOAnchorPos(targetRectTransform.anchoredPosition, 1f).OnComplete(() =>
+            {
+                Debug.Log("Card movement complete!");
 
+                // 이동이 완료된 후에 다른 작업을 수행하거나 필요한 처리를 여기에 추가할 수 있습니다.
+            });
+
+            targetRectTransform.DOLocalRotateQuaternion(targetRectTransform.localRotation, 1f);
         }
-
-
-
     }
-   
-  
-    List<Transform> RoundAlignment(Transform righthand, Transform lefthand, int objcount, float height)
+
+    List<RectTransform> RoundAlignmentUI(RectTransform leftHandTr, RectTransform rightHandTr, int cardCount, float height)
     {
-        float[] objLerps = new float[objcount];
-        List<Transform> results = new List<Transform>(objcount);
+        float[] objLerps = new float[cardCount];
+        List<RectTransform> results = new List<RectTransform>(cardCount);
 
-
-        switch (objcount)
+        switch (cardCount)
         {
             case 1: objLerps = new float[] { 0.5f }; break;
             case 2: objLerps = new float[] { 0.27f, 0.73f }; break;
             case 3: objLerps = new float[] { 0.1f, 0.5f, 0.9f }; break;
             default:
-                float interval = 1f / (objcount - 1);
-                for (int i = 0; i < objcount; i++)
+                float interval = 1f / (cardCount - 1);
+                for (int i = 0; i < cardCount; i++)
                 {
                     objLerps[i] = interval * i;
                 }
                 break;
-
         }
 
-        for (int i = 0; i < objcount; i++)
+        for (int i = 0; i < cardCount; i++)
         {
-            var targetPos = Vector2.Lerp(lefthand.position, righthand.position, objLerps[i]);
+            var targetPos = Vector2.Lerp(leftHandTr.anchoredPosition, rightHandTr.anchoredPosition, objLerps[i]);
             var targetRot = Quaternion.identity;
 
-            if (objcount >= 4)
+            if (cardCount >= 4)
             {
                 float curve = Mathf.Sqrt(Mathf.Pow(height, 2) - Mathf.Pow(objLerps[i] - 0.5f, 2));
                 curve = height >= 0 ? curve : -curve;
-                targetPos.y += curve;
-                targetRot = Quaternion.Slerp(lefthand.rotation, righthand.rotation, objLerps[i]);
+                curve *= 200;
+                targetPos.y += curve; // 아래쪽으로 배치되는 대신 위쪽으로 배치되도록 음수로 변경
+                targetRot = Quaternion.Euler(0, 0, Mathf.Lerp(-20, 20, objLerps[i])); // 카드 회전 각도를 반대로 변경
             }
 
+            RectTransform newRectTransform = new GameObject("Object" + i).AddComponent<RectTransform>();
+            newRectTransform.anchoredPosition = targetPos;
+            newRectTransform.localRotation = targetRot;
 
-            Transform newTransform = new GameObject("Object" + i).transform;
-            newTransform.position = targetPos;
-            newTransform.rotation = targetRot;
-
-            results.Add(newTransform);
-
-
+            results.Add(newRectTransform);
         }
 
         return results;
-
-
-
-
     }
+
+
+
 
 
 
@@ -222,7 +218,7 @@ public class PlayerDeck : MonoBehaviour
         for (int i = 0; i < baseDraw; i++)
         {
             DrawCard();
-            cardAllignment();
+            //cardAllignment();
         }
     }
 
@@ -237,6 +233,8 @@ public class PlayerDeck : MonoBehaviour
         playerHand.RemoveCard(card);
         playerDiscard.AddToDiscardPile(card);
         card.SetActive(false);
+        card.transform.SetParent(playerDiscard.transform);
+        card.transform.localPosition = Vector3.zero;
         cardAllignment();
     }
 
@@ -251,7 +249,20 @@ public class PlayerDeck : MonoBehaviour
         }
     }
 
+    #region MyCard
 
+    public void CardMouseOver(Card card)
+    {
+        print("CardMouseOver");
+    }
+
+
+    public void CardMouseExit(Card card)
+    {
+        print("CardMouseExit");
+    }
+
+    #endregion
 
 
 }

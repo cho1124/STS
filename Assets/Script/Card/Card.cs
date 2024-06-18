@@ -37,4 +37,8 @@ public class Card
         this.rare_type_Image = rare_type_Image;
         this.rare_Image = rare_Image;
     }
+
+    
+
+
 }
