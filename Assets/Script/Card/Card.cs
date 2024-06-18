@@ -13,6 +13,7 @@ public class Card
     public string type;
     //public int rare;
     public string cardDescription;
+    public string targetType; // enemy select, none, enemy all
 
     public Sprite cardImage;
     public Sprite rare_type_Image;

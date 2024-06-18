@@ -52,7 +52,7 @@ public class CardDatabase : MonoBehaviour
                 frame += 6;
             }
 
-            Sprite cardSprite = FindSpriteByName("Card"+id, allSprites);
+            Sprite cardSprite = FindSpriteByName("Card"+(id + 1), allSprites);
             Sprite FrameSprite = FindSpriteByName("Frame" + frame, allFrames);
             Sprite TitleSprite = FindSpriteByName("title" + rare, allFrames);
             //card1Sprite = Resources.Load<Sprite>("123")

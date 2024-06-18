@@ -19,6 +19,8 @@ public class CreateNode : MonoBehaviour
     private GameObject finalNode; // finalNode 참조를 저장할 변수
 
     private List<GameObject> canMoveList;
+    public float blinkInterval = 0.5f; // 깜빡거리는 간격
+    private bool isBlinking = false;
 
     private GameObject currentSelection; // 현재 선택된 노드
 
@@ -54,18 +56,76 @@ public class CreateNode : MonoBehaviour
                 if (nodes[i, j] != null && i == canMoveNode)
                 {
                     canMoveList.Add(nodes[i, j]);
-                    //Debug.Log(nodes[i, j]);
+                    
                 }
             }
         }
 
+        foreach(GameObject gameObject in canMoveList)
+        {
+            Debug.Log(gameObject);
+        }
+
+
     }
 
+    
 
     private void Update()
     {
+        if (!isBlinking)
+        {
+            StartCoroutine(BlinkCoroutine());
+        }
+
         
+
+
     }
+
+    private IEnumerator BlinkCoroutine()
+    {
+        isBlinking = true;
+        while (true)
+        {
+            // 크기를 키우기
+            yield return StartCoroutine(ChangeScale(Vector3.one * 2f, blinkInterval));
+
+            // 원래 크기로 되돌리기
+            yield return StartCoroutine(ChangeScale(Vector3.one, blinkInterval));
+        }
+    }
+
+    private IEnumerator ChangeScale(Vector3 targetScale, float duration)
+    {
+        float time = 0;
+        Vector3[] initialScales = new Vector3[canMoveList.Count];
+
+        // 각 게임 오브젝트의 초기 크기를 저장
+        for (int i = 0; i < canMoveList.Count; i++)
+        {
+            initialScales[i] = canMoveList[i].transform.localScale;
+        }
+
+        // 크기를 서서히 변경
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+            for (int i = 0; i < canMoveList.Count; i++)
+            {
+                canMoveList[i].transform.localScale = Vector3.Lerp(initialScales[i], targetScale, t);
+            }
+            yield return null;
+        }
+
+        // 최종 크기 설정
+        for (int i = 0; i < canMoveList.Count; i++)
+        {
+            canMoveList[i].transform.localScale = targetScale;
+        }
+    }
+
 
 
     public void GenerateFinalFloor()

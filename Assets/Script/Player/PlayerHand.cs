@@ -1,17 +1,22 @@
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
+
 
 public class PlayerHand : MonoBehaviour
 {
-    public List<Card> handCards = new List<Card>();
+    public List<GameObject> handCards = new List<GameObject>();
     public int maxHandSize = 10;
+    
 
-    public void AddCard(Card card)
+
+
+    public void AddCard(GameObject card)
     {
         if (handCards.Count < maxHandSize)
         {
             handCards.Add(card);
-            Debug.Log("Card added to hand: " + card.cardName);
+            //Debug.Log("Card added to hand: " + card.cardName);
         }
         else
         {
@@ -19,12 +24,12 @@ public class PlayerHand : MonoBehaviour
         }
     }
 
-    public void RemoveCard(Card card)
+    public void RemoveCard(GameObject card)
     {
         if (handCards.Contains(card))
         {
             handCards.Remove(card);
-            Debug.Log("Card removed from hand: " + card.cardName);
+            //Debug.Log("Card removed from hand: " + card.cardName);
         }
     }
 
@@ -33,4 +38,7 @@ public class PlayerHand : MonoBehaviour
         handCards.Clear();
         Debug.Log("Hand cleared");
     }
+
+    
+
 }

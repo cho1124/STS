@@ -27,11 +27,17 @@ public class ThisCard : MonoBehaviour
 
 
 
+    private void Awake()
+    {
+        
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        thisCard[0] = CardDatabase.cardList[thisId];
+
         //thisCard[1] = CardDatabase.cardList[5];
+        thisCard[0] = CardDatabase.cardList[thisId];
         id = thisCard[0].id;
         cardName = thisCard[0].cardName;
         cost = thisCard[0].cost;
@@ -44,6 +50,13 @@ public class ThisCard : MonoBehaviour
         costText.text = "" + cost;
         typeText.text = "" + type;
         descriptionText.text = "" + cardDescription;
+
+        cardSprite = thisCard[0].cardImage;
+
+        rare_type_Image.sprite = thisCard[0].rare_type_Image;
+        rareImage.sprite = thisCard[0].rare_Image;
+
+        cardImage.sprite = cardSprite;
     }
 
     // Update is called once per frame
@@ -64,12 +77,7 @@ public class ThisCard : MonoBehaviour
         //typeText.text = "" + type;
         //descriptionText.text = "" + cardDescription;
 
-        cardSprite = thisCard[0].cardImage;
-
-        rare_type_Image.sprite = thisCard[0].rare_type_Image;
-        rareImage.sprite = thisCard[0].rare_Image;
-
-        cardImage.sprite = cardSprite;
+        
 
     }
 }
