@@ -16,13 +16,14 @@ public class PlayerDeck : MonoBehaviour
 
     public RectTransform leftHandTr;
     public RectTransform RightHandTr;
-
     public int baseDraw = 5;
 
     public Text DeckCountText;
-    
-    
 
+    public GameObject arrowPrefab;
+    public GameObject selectedCard;
+    public Canvas CombatCanvas;
+    bool isMyCardDrag;
 
     void Start()
     {
@@ -103,6 +104,8 @@ public class PlayerDeck : MonoBehaviour
     }
     public void DrawCard()
     {
+        
+
         if (Deck.Count == 0)
         {
             ReshuffleDiscardPileIntoDeck();
@@ -118,6 +121,11 @@ public class PlayerDeck : MonoBehaviour
             drawnCard.SetActive(true);
             playerHand.AddCard(drawnCard);
 
+            if (playerHand.handCards.Count > playerHand.maxHandSize)
+            {
+                DiscardCard(drawnCard);
+                return;
+            }
             //playerHand.
             //playerHand
             RectTransform drawnCardRectTransform = drawnCard.GetComponent<RectTransform>();
@@ -125,6 +133,8 @@ public class PlayerDeck : MonoBehaviour
             //drawnCard.transform.DOMove(playerHand.transform.position, 1f);
             //drawnCard.transform.DORotate(playerHand.transform.rotation, 1f);
             // Set the parent to playerHandTransform
+
+
 
             cardAllignment();
 
@@ -135,7 +145,7 @@ public class PlayerDeck : MonoBehaviour
         }
         else
         {
-            Debug.Log("Deck is empty and discard pile has no cards!");
+            //Debug.Log("Deck is empty and discard pile has no cards!");
         }
     }
 
@@ -156,7 +166,7 @@ public class PlayerDeck : MonoBehaviour
             // 애니메이션 적용
             targetRectTransform.DOAnchorPos(targetRectTransform.anchoredPosition, 1f).OnComplete(() =>
             {
-                Debug.Log("Card movement complete!");
+                //Debug.Log("Card movement complete!");
 
                 // 이동이 완료된 후에 다른 작업을 수행하거나 필요한 처리를 여기에 추가할 수 있습니다.
             });
@@ -243,6 +253,13 @@ public class PlayerDeck : MonoBehaviour
         if (playerDiscard.discardedCards.Count > 0)
         {
             Deck.AddRange(playerDiscard.discardedCards);
+            
+            foreach(GameObject Discard in playerDiscard.discardedCards)
+            {
+                Discard.transform.SetParent(transform);
+            }
+
+
             playerDiscard.ClearDiscardPile();
             Shuffle();
             Debug.Log("Reshuffled discard pile into deck.");
@@ -251,16 +268,40 @@ public class PlayerDeck : MonoBehaviour
 
     #region MyCard
 
-    public void CardMouseOver(Card card)
+    public void EnlargeCard(GameObject cardObject, Vector3 originalScale,  Vector3 originalPosition,  Vector3 positionOffset, float scaleMultiplier,  RectTransform rectTransform)
     {
-        print("CardMouseOver");
+
+        selectedCard = cardObject;
+        cardObject.transform.localScale = originalScale * scaleMultiplier; // 1.2f
+        cardObject.transform.localPosition = originalPosition + positionOffset; // y로 150f , z로 -10f
+        cardObject.transform.localRotation = Quaternion.identity;
+        rectTransform.SetAsLastSibling();
+
+
+
+    }
+
+    // 카드 복원 메소드
+    public void RestoreCard(GameObject cardObject, Vector3 originalScale, Vector3 originalPosition, Quaternion originalRotation, int originalSiblingIndex, RectTransform rectTransform)
+    {
+        selectedCard = null;
+        cardObject.transform.localScale = originalScale;
+        cardObject.transform.localPosition = originalPosition;
+        cardObject.transform.localRotation = originalRotation;
+        rectTransform.SetSiblingIndex(originalSiblingIndex);
+    }
+
+    public void CardMouseDown()
+    {
+        isMyCardDrag = false;
+    }
+
+    public void CardMouseUp()
+    {
+        isMyCardDrag = true;
     }
 
 
-    public void CardMouseExit(Card card)
-    {
-        print("CardMouseExit");
-    }
 
     #endregion
 

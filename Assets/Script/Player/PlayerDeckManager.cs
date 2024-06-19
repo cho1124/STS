@@ -43,9 +43,13 @@ public class PlayerDeckManager : MonoBehaviour
             Deck.Add(CardDatabase.cardList[0]);
         }
 
-        for (int i = 5; i < 9; i++)
+        for (int i = 0; i < 5; i++)
         {
             Deck.Add(CardDatabase.cardList[10]);
+        }
+        for(int i = 0; i < 5; i++)
+        {
+            Deck.Add(CardDatabase.cardList[3]);
         }
 
         Deck.Add(CardDatabase.cardList[1]);

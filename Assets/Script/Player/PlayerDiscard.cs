@@ -16,7 +16,7 @@ public class PlayerDiscard : MonoBehaviour
     public void ClearDiscardPile()
     {
         discardedCards.Clear();
-        Debug.Log("Discard pile cleared");
+        //Debug.Log("Discard pile cleared");
     }
 
     public void UpdatediscardCount()

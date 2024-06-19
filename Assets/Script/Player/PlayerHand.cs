@@ -13,15 +13,13 @@ public class PlayerHand : MonoBehaviour
 
     public void AddCard(GameObject card)
     {
-        if (handCards.Count < maxHandSize)
-        {
-            handCards.Add(card);
-            //Debug.Log("Card added to hand: " + card.cardName);
-        }
-        else
-        {
-            Debug.Log("Hand is full!");
-        }
+        
+           
+        handCards.Add(card);
+        Debug.Log(handCards.Count);
+           
+        //Debug.Log("Card added to hand: " + card.cardName);
+        
     }
 
     public void RemoveCard(GameObject card)
