@@ -1504,6 +1504,8 @@ MonoBehaviour:
   arrowPrefab: {fileID: 2552482984071468149, guid: 3810a39d4928b1f46b7b9440e06a080b, type: 3}
   selectedCard: {fileID: 0}
   CombatCanvas: {fileID: 1261997942}
+  dotPrefab: {fileID: 4061152778058651854, guid: 0642e00f5e57ff447b20cdf16e91eba9, type: 3}
+  dotSpacing: 0.5
 --- !u!114 &582041740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3520,7 +3522,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: e7ee24564df9d23409697c57eb83e937, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

@@ -25,6 +25,15 @@ public class PlayerDeck : MonoBehaviour
     public Canvas CombatCanvas;
     bool isMyCardDrag;
 
+    public GameObject dotPrefab; // 작은 이미지(점) 프리팹
+    public float dotSpacing = 0.5f; // 점 간의 간격
+
+    private List<GameObject> dots = new List<GameObject>(); // 생성된 점들
+
+
+
+
+
     void Start()
     {
 

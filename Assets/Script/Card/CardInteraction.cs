@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System.Net;
 
 
-public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
 
     public PlayerDeck playerDeck;
@@ -21,8 +23,14 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private Image arrowPrefab_image;
     private Color arrowPrefab_originalColor;
-    
 
+
+    private List<GameObject> dots = new List<GameObject>(); // 생성된 점들
+    private Vector2 startPoint; // 시작 지점
+
+    private int dotCount = 20;
+
+    private LineRenderer lineRenderer;
 
     void Start()
     {
@@ -32,6 +40,10 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         //
         rectTransform = GetComponent<RectTransform>();
         originalSiblingIndex = rectTransform.GetSiblingIndex();
+
+        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.positionCount = dotCount + 1;
+
         //playerDeck.Initializecard(transform, out originalScale, out originalSiblingIndex, out rectTransform);
     }
 
@@ -55,22 +67,7 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     
 
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        // 드래그 시작 시 프리팹을 인스턴스화하거나 다른 작업을 수행합니다.
-        
-        Debug.Log("Drag started!");
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        // 드래그 종료 시 프리팹을 제거하거나 다른 작업을 수행합니다.
-        //if (arrowPrefab != null)
-        //{
-        //    Destroy(arrowPrefab);
-        //}
-        Debug.Log("Drag ended!");
-    }
+    
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -79,12 +76,30 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         arrowPrefab.transform.SetParent(playerDeck.CombatCanvas.transform);
         arrowPrefab.transform.position = eventData.position;
         arrowPrefab_image = arrowPrefab.GetComponent<Image>();
-
         arrowPrefab_originalColor = arrowPrefab.GetComponent<Image>().color;
 
+        startPoint = eventData.position;
+
+        for (int i = 0; i < dotCount; i++)
+        {
+            if (i >= dots.Count)
+            {
+                // 점 생성
+                GameObject dot = Instantiate(playerDeck.dotPrefab, arrowPrefab.transform);
+                dots.Add(dot);
+            }
         
-
-
+            // 점 위치 설정
+            
+        }
+        
+        for (int i = 0; i < dotCount; i++)
+        {
+            GameObject dot = Instantiate(playerDeck.dotPrefab, arrowPrefab.transform);
+            dot.transform.SetParent(playerDeck.CombatCanvas.transform);
+            dots.Add(dot);
+            
+        }
         //oldPosition = transform.position;
 
         //Debug.Log(oldPosition);
@@ -94,8 +109,16 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         // UI 요소를 마우스 위치로 이동
         arrowPrefab.transform.position = eventData.position;
-        //Debug.Log(transform.position);
+        Debug.Log($"Start position : {startPoint}, Current position : {eventData.position}");
+        Vector2 direction = startPoint - eventData.position; //행복한 수학시간, 시작지점에서 현재 지점까지의 벡터값을 구해와서
+        Debug.Log($"Direction vector: {direction.normalized}");
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg; //이걸 우리가 사용할 수 있도록 만들어 준다.
+        Debug.Log($"Angle : {angle}");
+        RectTransform rectTransform = arrowPrefab.GetComponent<RectTransform>();
+        rectTransform.localRotation = Quaternion.Euler(0, 0, angle);
 
+
+        //Debug.Log(direction);
         // 마우스 위치에서 Raycast를 수행하여 2D 적 오브젝트 찾기
         Vector2 worldPoint = Camera.main.ScreenToWorldPoint(eventData.position);
         RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero);
@@ -118,12 +141,43 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             arrowPrefab_image.color = arrowPrefab_originalColor; // 원래 색상으로 복원
         }
 
+        
+
+
+        for (int i = 0; i < dotCount; i++)
+        {
+            float t = (float)i / (dotCount + 0.5f);
+            Vector2 dotPosition = BezierCurve(startPoint, new Vector2(startPoint.x, eventData.position.y), eventData.position, t);
+            dots[i].transform.position = dotPosition;
+            dots[i].SetActive(true);
+        }
+
+
 
     }
     public void OnEndDrag(PointerEventData eventData)
     {
-        Destroy(arrowPrefab);
+        //Destroy(arrowPrefab);
+        foreach (GameObject dot in dots)
+        {
+            Destroy(dot);
+        }
+        dots.Clear();
     }
+
+    Vector2 BezierCurve(Vector2 startPoint, Vector2 controlPoint, Vector2 endPoint, float t)
+    {
+        float u = 1 - t;
+        float tt = t * t;
+        float uu = u * u;
+
+        Vector2 point = uu * startPoint + 2 * u * t * controlPoint + tt * endPoint;
+
+        return point;
+    }
+
+
+
 
 
 
