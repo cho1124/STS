@@ -1,10 +1,53 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
-public class Monster : MonoBehaviour
+public class Monster : Character
 {
-    // Start is called before the first frame update
-    //몬스터를 스크립터블 오브젝트화 해서 사용할 것임 혹은 저번처럼 텍스트화 해서 사용해도 될듯
-    
+    public MonsterData data;
+
+    private void Start()
+    {
+        InitializeMonster();
+    }
+
+    private void InitializeMonster()
+    {
+        if (data != null)
+        {
+            characterName = data.monsterName;
+            maxHealth = data.maxHealth;
+            currentHealth = maxHealth;
+            attackPower = data.attackPower;
+            defense = 0;
+        }
+        else
+        {
+            Debug.LogError("Monster data not assigned.");
+        }
+    }
+
+    public override void Attack(Character target)
+    {
+        int damage = Mathf.Max(0, attackPower - target.defense);
+        target.TakeDamage(damage);
+        Debug.Log(characterName + " attacks " + target.characterName + " for " + damage + " damage.");
+    }
+
+    public override void TakeDamage(int damage)
+    {
+        currentHealth = Mathf.Max(0, currentHealth - damage);
+        if (currentHealth == 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log(characterName + " has been defeated.");
+        Destroy(gameObject);
+    }
 }
+

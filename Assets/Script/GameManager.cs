@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,10 +7,8 @@ public class GameManager : MonoBehaviour
     public CharacterData playerData;
     public PlayerUIManager playerUIManager;
 
-
-
-    
-    //public MonsterData monsterData;
+    public Player player;
+    public BattleManager battleManager;
 
     private int currentHealth;
     private int currentGold;
@@ -21,15 +16,14 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        // 다른 씬에서 동일한 오브젝트가 이미 있다면 새로 생성되지 않도록 처리
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject); // 씬이 변경될 때 파괴되지 않도록 설정
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(gameObject); // 이미 있는 경우 이 오브젝트는 파괴
+            Destroy(gameObject);
         }
     }
 
@@ -37,9 +31,12 @@ public class GameManager : MonoBehaviour
     {
         currentHealth = playerData.maxHealth;
         currentGold = playerData.startingGold;
+        currentFloor = 0;
 
-        
+        player = FindObjectOfType<Player>();
+        //player.data = playerData;
 
+        UpdateAllUI();
     }
 
     private void Update()
@@ -47,12 +44,32 @@ public class GameManager : MonoBehaviour
         UpdateAllUI();
     }
 
-    void UpdateAllUI()
+    void SpawnPlayer()
     {
-        playerUIManager.UpdateHealthText(currentHealth, playerData.maxHealth);
+        GameObject playerObject = Instantiate(playerData.playerPrefab, Vector3.zero, Quaternion.identity);
+        playerObject.name = "Player";
+        player = playerObject.GetComponent<Player>();
+
+        // 플레이어 데이터 할당
+        //player.data = playerData;
+    }
+
+    public void UpdateAllUI()
+    {
+        //playerUIManager.UpdateHealthText(player.GetCurrentHealth(), playerData.maxHealth);
         playerUIManager.UpdateGoldText(currentGold);
         playerUIManager.UpdateFloorText(currentFloor);
     }
 
+    public void IncreaseGold(int amount)
+    {
+        currentGold += amount;
+        UpdateAllUI();
+    }
 
+    public void AdvanceFloor()
+    {
+        currentFloor++;
+        UpdateAllUI();
+    }
 }

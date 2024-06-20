@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: EliteGremlin
+  m_EditorClassIdentifier: Assembly-CSharp::EliteGremlinData
+  monsterName: 
+  maxHealth: 0
+  minHealth: 0
+  attackPower: 0
+  monsterPrefab: {fileID: 8294243681640931753, guid: ea847d96ef58d1f409c15157eb330957, type: 3}

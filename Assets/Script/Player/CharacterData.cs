@@ -21,6 +21,7 @@ public class CharacterData : ScriptableObject
     public int startMana;
     public int playerPower;
     public int playerSpeed;
+    public GameObject playerPrefab;
 
     public List<PlayerStatus> playerStatuses = new List<PlayerStatus>();
     // 추가적인 캐릭터 속성들을 정의합니다.
