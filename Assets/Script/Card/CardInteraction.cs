@@ -93,29 +93,18 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             
         }
         
-        for (int i = 0; i < dotCount; i++)
-        {
-            GameObject dot = Instantiate(playerDeck.dotPrefab, arrowPrefab.transform);
-            dot.transform.SetParent(playerDeck.CombatCanvas.transform);
-            dots.Add(dot);
-            
-        }
-        //oldPosition = transform.position;
-
-        //Debug.Log(oldPosition);
+        
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         // UI 요소를 마우스 위치로 이동
         arrowPrefab.transform.position = eventData.position;
-        Debug.Log($"Start position : {startPoint}, Current position : {eventData.position}");
-        Vector2 direction = startPoint - eventData.position; //행복한 수학시간, 시작지점에서 현재 지점까지의 벡터값을 구해와서
-        Debug.Log($"Direction vector: {direction.normalized}");
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg; //이걸 우리가 사용할 수 있도록 만들어 준다.
-        Debug.Log($"Angle : {angle}");
-        RectTransform rectTransform = arrowPrefab.GetComponent<RectTransform>();
-        rectTransform.localRotation = Quaternion.Euler(0, 0, angle);
+        //Debug.Log($"Start position : {startPoint}, Current position : {eventData.position}");
+        Vector2 direction =  eventData.position - startPoint; //행복한 수학시간, 시작지점에서 현재 지점까지의 벡터값을 구해와서
+        //Debug.Log($"Direction vector: {direction}");
+        
+        arrowPrefab.transform.up = direction.normalized;
 
 
         //Debug.Log(direction);
@@ -130,25 +119,30 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             {
                 Debug.Log("Enemy Detected: " + hit.collider.gameObject.name);
                 arrowPrefab_image.color = Color.red; // 화살표 색상을 빨갛게 변경
+                ChangeChildImageColors(arrowPrefab.transform, true);
             }
             else
             {
                 arrowPrefab_image.color = arrowPrefab_originalColor; // 원래 색상으로 복원
+                
             }
         }
         else if (arrowPrefab_image != null)
         {
             arrowPrefab_image.color = arrowPrefab_originalColor; // 원래 색상으로 복원
+            ChangeChildImageColors(arrowPrefab.transform, false);
         }
 
         
-
+        
 
         for (int i = 0; i < dotCount; i++)
         {
             float t = (float)i / (dotCount + 0.5f);
             Vector2 dotPosition = BezierCurve(startPoint, new Vector2(startPoint.x, eventData.position.y), eventData.position, t);
+            
             dots[i].transform.position = dotPosition;
+            dots[i].transform.up = eventData.position - dotPosition;
             dots[i].SetActive(true);
         }
 
@@ -157,7 +151,7 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     }
     public void OnEndDrag(PointerEventData eventData)
     {
-        //Destroy(arrowPrefab);
+        Destroy(arrowPrefab);
         foreach (GameObject dot in dots)
         {
             Destroy(dot);
@@ -176,10 +170,35 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         return point;
     }
 
+    void ChangeChildImageColors(Transform parent, bool isDected)
+    {
+        // 부모 오브젝트의 모든 자식을 순회하면서 Image 컴포넌트가 있으면 색상 변경
+        foreach (Transform child in parent)
+        {
+            Image image = child.GetComponent<Image>();
+            if (image != null)
+            {
+                if(isDected)
+                {
+                    image.color = Color.red; // 이미지의 색상 변경
+                }
+                else
+                {
+                    //Debug.Log("isDected is false");
+                    image.color = arrowPrefab_originalColor;
+                }
 
+                
+            }
 
+            
+        }
 
-
-
-
+    }
 }
+
+
+
+
+
+

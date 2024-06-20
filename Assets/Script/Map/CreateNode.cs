@@ -3,10 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+public class Nodes
+{
+    public GameObject currentGameObj;
+    public List<GameObject> nextGameObjs;
+    public bool isCleared = false;
+    public int currentFloor = 0;
+
+
+    public Nodes(GameObject currentObj)
+    {
+        currentGameObj = currentObj;
+        
+        nextGameObjs = new List<GameObject>();
+    }
+}
+
+
 public class CreateNode : MonoBehaviour
 {
     
     public List<GameObject> checkPrefab;
+
+    public List<Node> Nodetypes;
+
     public int numRows = 15; // 행의 수
     public int numColumns = 7; // 열의 수
     public float spacing = 1f; // 노드 간의 간격
@@ -17,20 +37,19 @@ public class CreateNode : MonoBehaviour
     private GameObject lastPrefab;
     public GameObject FinalPrefab;
     private GameObject finalNode; // finalNode 참조를 저장할 변수
-
-    private List<GameObject> canMoveList;
+    public GameObject startNode;
+    public List<GameObject> canMoveList;
     public float blinkInterval = 0.5f; // 깜빡거리는 간격
     private bool isBlinking = false;
 
     private GameObject currentSelection; // 현재 선택된 노드
-
+    private List<Nodes> allNodes = new List<Nodes>();
 
 
     private int canMoveNode = 0;
 
     void Awake()
     {
-
 
 
         nodes = new GameObject[numRows, numColumns]; // 이중 배열 초기화
@@ -45,43 +64,109 @@ public class CreateNode : MonoBehaviour
 
 
         GenerateFinalFloor();
-
+        
         ConnectLine();
 
        
-        for(int i = 0; i <  numRows; i++)
-        {
-            for(int j = 0; j < numColumns; j++)
-            {
-                if (nodes[i, j] != null && i == canMoveNode)
-                {
-                    canMoveList.Add(nodes[i, j]);
-                    
-                }
-            }
-        }
+        //for(int i = 0; i <  numRows; i++)
+        //{
+        //    for(int j = 0; j < numColumns; j++)
+        //    {
+        //        if (nodes[i, j] != null && i == canMoveNode)
+        //        {
+        //            canMoveList.Add(nodes[i, j]);
+        //            
+        //        }
+        //    }
+        //}
 
-        foreach(GameObject gameObject in canMoveList)
-        {
-            Debug.Log(gameObject);
-        }
 
+
+        PrintConnectedNodes(startNode);
 
     }
 
-    
 
     private void Update()
     {
-        if (!isBlinking)
-        {
-            StartCoroutine(BlinkCoroutine());
-        }
-
         
+        if (Input.GetMouseButtonDown(0))
+        {
+            // 마우스 클릭 위치 출력
+            Vector3 mousePosition = Input.mousePosition;
+            //Debug.Log("Mouse Clicked at: " + mousePosition);
 
+            // 메인 카메라가 있는지 확인
+            if (Camera.main == null)
+            {
+                Debug.LogError("Main camera is not found.");
+                return;
+            }
+
+            // 메인 카메라의 스크린 좌표를 월드 좌표로 변환
+            Vector2 worldPoint = Camera.main.ScreenToWorldPoint(mousePosition);
+
+            // 레이를 발사
+            RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero);
+
+            // 레이가 어떤 오브젝트와 충돌했는지 체크
+            if (hit.collider != null)
+            {
+                // 충돌한 오브젝트가 canMoveList에 포함되어 있는지 확인
+                if (canMoveList.Contains(hit.collider.gameObject))
+                {
+                    // 포함되어 있다면 해당 오브젝트의 정보를 로그로 출력
+                    Debug.Log("Clicked on: " + hit.collider.gameObject.name);
+                    currentSelection = hit.collider.gameObject;
+                    currentSelection.SetActive(true);
+                    Transform childTransform = currentSelection.transform.Find("Clear");
+                    childTransform.gameObject.SetActive(true);
+                    canMoveList.Clear();
+                    PrintConnectedNodes(currentSelection);
+                }
+                else
+                {
+                    Debug.Log("Object hit but not in canMoveList.");
+                }
+            }
+            else
+            {
+                Debug.Log("No object hit by raycast.");
+            }
+        }
+    }
+
+
+    private void generateCanMoveList()
+    {
+        canMoveList.Clear();
+
+        if(canMoveNode == 0)
+        {
+            for (int i = 0; i < numRows; i++)
+            {
+                for (int j = 0; j < numColumns; j++)
+                {
+                    if (nodes[i, j] != null && i == canMoveNode)
+                    {
+                        canMoveList.Add(nodes[i, j]);
+
+                    }
+                }
+            }
+            
+        }
+        //else if(canMoveNode > )
+        //{
+        //
+        //}
+
+        canMoveNode++;
 
     }
+
+
+
 
     private IEnumerator BlinkCoroutine()
     {
@@ -99,12 +184,12 @@ public class CreateNode : MonoBehaviour
     private IEnumerator ChangeScale(Vector3 targetScale, float duration)
     {
         float time = 0;
-        Vector3[] initialScales = new Vector3[canMoveList.Count];
+        List<Vector3> initialScales = new List<Vector3>();
 
         // 각 게임 오브젝트의 초기 크기를 저장
-        for (int i = 0; i < canMoveList.Count; i++)
+        foreach (var obj in canMoveList)
         {
-            initialScales[i] = canMoveList[i].transform.localScale;
+            initialScales.Add(obj.transform.localScale);
         }
 
         // 크기를 서서히 변경
@@ -114,7 +199,10 @@ public class CreateNode : MonoBehaviour
             float t = time / duration;
             for (int i = 0; i < canMoveList.Count; i++)
             {
-                canMoveList[i].transform.localScale = Vector3.Lerp(initialScales[i], targetScale, t);
+                if (i < initialScales.Count)
+                {
+                    canMoveList[i].transform.localScale = Vector3.Lerp(initialScales[i], targetScale, t);
+                }
             }
             yield return null;
         }
@@ -122,12 +210,26 @@ public class CreateNode : MonoBehaviour
         // 최종 크기 설정
         for (int i = 0; i < canMoveList.Count; i++)
         {
-            canMoveList[i].transform.localScale = targetScale;
+            if (i < initialScales.Count)
+            {
+                canMoveList[i].transform.localScale = targetScale;
+            }
         }
     }
 
 
 
+
+    public void GenerateFirstFloor()
+    {
+        int numTilesToGenerate = Random.Range(3, 5); // 최소 3번에서 최대 4번까지 실행
+
+
+        for (int i = 0; i < numTilesToGenerate; i++)
+        {
+            GenerateTile(); // GenerateTile 메소드 호출
+        }
+    }
     public void GenerateFinalFloor()
     {
         finalNode = Instantiate(FinalPrefab, new Vector3(0, 25, 0), Quaternion.identity);
@@ -238,19 +340,6 @@ public class CreateNode : MonoBehaviour
     }
 
 
-
-    public void GenerateFirstFloor()
-    {
-        int numTilesToGenerate = Random.Range(3, 5); // 최소 3번에서 최대 4번까지 실행
-
-
-        for (int i = 0; i < numTilesToGenerate; i++)
-        {
-            GenerateTile(); // GenerateTile 메소드 호출
-        }
-    }
-
-
     public void DeleteWhite()
     {
         // 자식 오브젝트들을 순회
@@ -266,120 +355,122 @@ public class CreateNode : MonoBehaviour
 
     public GameObject randomPrefab(int i)
     {
-        GameObject newObj;
+        GameObject newObj = null;
         float randomValue;
-        
 
         if (i <= 5)
         {
-            
             if (i == 0)
             {
-                newObj = checkPrefab[0];
+                newObj = GetNodeType(NodeType.Normal);
             }
             else
             {
                 do
                 {
                     randomValue = Random.Range(0f, 1f);
-
-                    if (randomValue < 0.4f)  // 0.4의 확률로 prefab[0]
-                    {
-                        newObj = checkPrefab[0];
-                    }
-                    else if (randomValue < 0.7f)  // 0.3의 확률로 prefab[1]
-                    {
-                        newObj = checkPrefab[1];
-                    }
-                    else  // 나머지 확률로 prefab[4]
-                    {
-                        newObj = checkPrefab[4];
-                    }
-
-                } while (newObj == checkPrefab[4]);  // prefab[4]가 선택되면 다시 선택
+                    newObj = SelectNode(randomValue, new[] { 0.4f, 0.7f }, new[] { NodeType.Normal, NodeType.Event, NodeType.Shop });
+                } while (newObj == GetNodeType(NodeType.Shop));
             }
         }
         else
         {
             if (i == 8)
             {
-                newObj = checkPrefab[5];
+                newObj = GetNodeType(NodeType.Treasure);
             }
             else if (i == 13)
             {
                 do
                 {
                     randomValue = Random.Range(0f, 1f);
-
-                    if (randomValue < 0.4f)  // 0.4의 확률로 prefab[0]
-                    {
-                        newObj = checkPrefab[0];
-                    }
-                    else if (randomValue < 0.7f)  // 0.3의 확률로 prefab[1]
-                    {
-                        newObj = checkPrefab[1];
-                    }
-                    else if (randomValue < 0.9f)  // 0.2의 확률로 prefab[2]
-                    {
-                        newObj = checkPrefab[2];
-                    }
-                    else  // 나머지 확률로 prefab[4]
-                    {
-                        newObj = checkPrefab[4];
-                    }
-
-                } while ((newObj == lastPrefab) && newObj == checkPrefab[4]);  // prefab[4]가 선택되면 다시 선택
+                    newObj = SelectNode(randomValue, new[] { 0.4f, 0.7f, 0.9f }, new[] { NodeType.Normal, NodeType.Event, NodeType.Elite, NodeType.Shop });
+                } while ((newObj == lastPrefab) && (newObj == GetNodeType(NodeType.Shop)));
             }
             else if (i == 14)
             {
-                newObj = checkPrefab[3];
+                newObj = GetNodeType(NodeType.Rest);
             }
             else
             {
                 do
                 {
                     randomValue = Random.Range(0f, 1f);
-
-                    if (randomValue < 0.35f)  // 0.35의 확률로 prefab[0]
-                    {
-                        newObj = checkPrefab[0];
-                    }
-                    else if (randomValue < 0.6f)  // 0.25의 확률로 prefab[1]
-                    {
-                        newObj = checkPrefab[1];
-                    }
-                    else if (randomValue < 0.8f)  // 0.2의 확률로 prefab[2]
-                    {
-                        newObj = checkPrefab[2];
-                    }
-                    else if (randomValue < 0.95f)  // 0.15의 확률로 prefab[3]
-                    {
-                        newObj = checkPrefab[3];
-                    }
-                    else  // 나머지 확률로 prefab[4]
-                    {
-                        newObj = checkPrefab[4];
-                    }
-
-                } while ((newObj == lastPrefab) && (newObj == checkPrefab[2] || newObj == checkPrefab[3] || newObj == checkPrefab[4]));  // prefab[2], prefab[3], prefab[4]가 선택되면 다시 선택
-                //
+                    newObj = SelectNode(randomValue, new[] { 0.35f, 0.6f, 0.8f, 0.95f }, new[] { NodeType.Normal, NodeType.Event, NodeType.Elite, NodeType.Rest, NodeType.Shop });
+                } while ((newObj == lastPrefab) && (newObj == GetNodeType(NodeType.Elite) || newObj == GetNodeType(NodeType.Rest) || newObj == GetNodeType(NodeType.Shop)));
             }
         }
-
 
         lastPrefab = newObj;
         return newObj;
     }
+    
+
+    private GameObject SelectNode(float randomValue, float[] thresholds, NodeType[] nodeTypes)
+    {
+        for (int j = 0; j < thresholds.Length; j++)
+        {
+            if (randomValue < thresholds[j])
+            {
+                return GetNodeType(nodeTypes[j]);
+            }
+        }
+        return GetNodeType(nodeTypes[thresholds.Length]); // 마지막 타입 반환
+    }
+
+    public GameObject GetNodeType(NodeType nodeType)
+    {
+        switch (nodeType)
+        {
+            case NodeType.Normal:
+                return checkPrefab[0];
+            case NodeType.Elite:
+                return checkPrefab[2];
+            case NodeType.Rest:
+                return checkPrefab[3];
+            case NodeType.Shop:
+                return checkPrefab[4];
+            case NodeType.Treasure:
+                return checkPrefab[5];
+            case NodeType.Event:
+                return checkPrefab[1];
+            case NodeType.Boss:
+                return FinalPrefab;
+            default:
+                return null;
+        }
+    }
+
 
 
     private void ConnectLine()
     {
+        Nodes StartNode = new Nodes(startNode);
+        for (int j = 0; j < numColumns; j++)
+        {
+            if(nodes[0, j] != null)
+            {
+                
+                StartNode.nextGameObjs.Add(nodes[0, j]);
+                StartNode.currentFloor = 0;
+                
+            }
+        }
+        allNodes.Add(StartNode);
+
+
+
         for (int i = 0; i < numRows - 1; i++)
         {
             for (int j = 0; j < numColumns; j++)
             {
                 if (nodes[i, j] != null)
                 {
+                    Nodes newNodes = new Nodes(nodes[i, j]);
+
+                    newNodes.currentFloor = i;
+
+
                     for (int k = -1; k <= 1; k++)
                     {
                         int neighborColumnIndex = j + k;
@@ -387,28 +478,75 @@ public class CreateNode : MonoBehaviour
                         if (neighborColumnIndex >= 0 && neighborColumnIndex < numColumns && nodes[i + 1, neighborColumnIndex] != null)
                         {
 
-                           // Debug.Log("i :" + i + " j : " + j + " vs i + 1 : " + (i + 1) + "neightbor : " + neighborColumnIndex);
+                            // Debug.Log("i :" + i + " j : " + j + " vs i + 1 : " + (i + 1) + "neightbor : " + neighborColumnIndex);
                             // nodes[i, j]와 nodes[i + 1, neighborColumnIndex]를 연결
+
+                            
+                            //newNodes.currentGameObj = nodes[i, j];
+                            newNodes.nextGameObjs.Add(nodes[i + 1, neighborColumnIndex]);
+                            
                             ConnectNodes(nodes[i, j], nodes[i + 1, neighborColumnIndex], 5);
                         }
 
-                        
 
                     }
+                    allNodes.Add(newNodes);
                 }
             }
         }
         for (int j = 0; j < numColumns; j++)
         {
+            
             if (nodes[14, j] != null)
             {
+                Nodes newNodes = new Nodes(nodes[14, j]);
                 ConnectNodes(nodes[14, j], finalNode, 10);
+                
+                newNodes.nextGameObjs.Add(finalNode);
+                newNodes.currentFloor = 14;
+                allNodes.Add(newNodes);
             }
+                
+
+            
         }
+
+        Nodes finaleNode = new Nodes(finalNode);
+        finaleNode.currentFloor = 15;
+        allNodes.Add(finaleNode);
+
 
 
 
     }
 
 
+
+    void PrintConnectedNodes(GameObject currentNode)
+    {
+        // currentNode에 해당하는 Nodes 객체를 찾음
+        Nodes currentNodeObject = allNodes.Find(node => node.currentGameObj == currentNode);
+
+        if (currentNodeObject != null)
+        {
+            Debug.Log("Current Node Tag :  " + currentNodeObject.currentGameObj.tag);
+            Debug.Log("Current Node Floor :  " + currentNodeObject.currentFloor);
+
+
+            foreach (GameObject nextNode in currentNodeObject.nextGameObjs)
+            {
+
+                Debug.Log("Connected Node: " + nextNode.name);
+                canMoveList.Add(nextNode);
+
+            }
+        }
+        else
+        {
+            Debug.Log("No connected nodes found for the current node.");
+        }
+        StopCoroutine("BlinkCoroutine");
+        StartCoroutine("BlinkCoroutine");
+
+    }
 }

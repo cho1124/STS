@@ -12,7 +12,7 @@ public class MapMover : MonoBehaviour
         // 맵 오브젝트를 위아래로 이동
         if (scroll != 0)
         {
-            Vector3 newPosition = transform.position + new Vector3(0, scroll * scrollSpeed, 0);
+            Vector3 newPosition = transform.position + new Vector3(0, -scroll * scrollSpeed, 0);
             transform.position = newPosition;
         }
     }

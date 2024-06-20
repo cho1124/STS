@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
 
     private int currentHealth;
     private int currentGold;
+    private int currentFloor;
 
     private void Awake()
     {
@@ -50,7 +51,7 @@ public class GameManager : MonoBehaviour
     {
         playerUIManager.UpdateHealthText(currentHealth, playerData.maxHealth);
         playerUIManager.UpdateGoldText(currentGold);
-        playerUIManager.UpdateFloorText(1);
+        playerUIManager.UpdateFloorText(currentFloor);
     }
 
 

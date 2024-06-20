@@ -35,12 +35,14 @@ public class PlayerDeckManager : MonoBehaviour
     public void InitializeDeck()
     {
         Deck.Clear();
+        int a = Random.Range(0, 23);
 
         // 여기서 플레이어 덱을 초기화하거나 불러오는 코드를 작성
         // 예를 들어, Deck.Add(CardDatabase.cardList[0]); 같은 코드들을 여기서 사용할 수 있음
         for (int i = 0; i < 5; i++)
         {
-            Deck.Add(CardDatabase.cardList[0]);
+            a = Random.Range(0, 23);
+            Deck.Add(CardDatabase.cardList[a]);
         }
 
         for (int i = 0; i < 5; i++)

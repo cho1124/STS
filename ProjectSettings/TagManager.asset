@@ -6,6 +6,13 @@ TagManager:
   tags:
   - Map
   - Enemy
+  - Monster
+  - Elite
+  - Rest
+  - Boss
+  - Chest
+  - Event
+  - Shop
   layers:
   - Default
   - TransparentFX

@@ -37,11 +37,6 @@ public class PlayerDeck : MonoBehaviour
     void Start()
     {
 
-        //PlayerDeckManager.Instance.InitializeDeck();
-        //Deck.Add(CardDatabase.cardList[1]); // 예시로 두 번째 카드를 마지막으로 추가
-
-
-        
         MakeCard();
         Shuffle();
         DrawInitialHand();
