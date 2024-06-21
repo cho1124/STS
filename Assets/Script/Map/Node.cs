@@ -18,8 +18,4 @@ public class Node : ScriptableObject
     public string nodeName;
     public GameObject nodeprefab;
 
-
-    
-
-
 }

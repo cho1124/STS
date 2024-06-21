@@ -2,9 +2,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-
-
-
 public class FollowMouse : MonoBehaviour
 {
     
@@ -21,8 +18,5 @@ public class FollowMouse : MonoBehaviour
 
    
 
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        //Destroy(gameObject);
-    }
+    
 }

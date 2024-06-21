@@ -1,0 +1,131 @@
+{
+  "MonsterList": [
+    {
+      "name": "BigSlimeL",
+      "maxhealth": 70,
+      "minhealth": 64,
+      "attack": 16,
+      "type" : 1
+    },
+    {
+      "name": "BigSlimeR",
+      "maxhealth": 69,
+      "minhealth": 65,
+      "attack": 11,
+      "type": 1
+    },
+    {
+      "name": "MiddleSlimeL",
+      "maxhealth": 32,
+      "minhealth": 28,
+      "attack": 8,
+      "type": 1
+    },
+    {
+      "name": "MiddleSlimeR",
+      "maxhealth": 32,
+      "minhealth": 28,
+      "attack": 7,
+      "type": 1
+    },
+    {
+      "name": "SmallSlimeL",
+      "maxhealth": 14,
+      "minhealth": 10,
+      "attack": 5,
+      "type": 1
+    },
+    {
+      "name": "SmallSlimeR",
+      "maxhealth": 12,
+      "minhealth": 8,
+      "attack": 3,
+      "type": 1
+    },
+    {
+      "name": "JawWorm",
+      "maxhealth": 44,
+      "minhealth": 40,
+      "attack": 11,
+      "type": 1
+    },
+    {
+      "name": "Slaver_Blue",
+      "maxhealth": 50,
+      "minhealth": 46,
+      "attack": 12,
+      "type": 1
+    },
+    {
+      "name": "Slaver_Red",
+      "maxhealth": 50,
+      "minhealth": 46,
+      "attack": 13,
+      "type": 1
+    },
+    {
+      "name": "Cultist",
+      "maxhealth": 54,
+      "minhealth": 48,
+      "attack": 6,
+      "type": 1
+    },
+    {
+      "name": "Fungi",
+      "maxhealth": 28,
+      "minhealth": 22,
+      "attack": 6,
+      "type": 1
+    },
+    {
+      "name": "ShieldGremlin",
+      "maxhealth": 15,
+      "minhealth": 12,
+      "attack": 0,
+      "type": 1
+    },
+    {
+      "name": "AngryGremlin",
+      "maxhealth": 24,
+      "minhealth": 20,
+      "attack": 4,
+      "type": 1
+    },
+    {
+      "name": "FatGremlin",
+      "maxhealth": 17,
+      "minhealth": 13,
+      "attack": 4,
+      "type": 1
+    },
+    {
+      "name": "EliteGremlin",
+      "maxhealth": 86,
+      "minhealth": 82,
+      "attack": 14,
+      "type": 2
+    },
+    {
+      "name": "Lagabulin",
+      "maxhealth": 111,
+      "minhealth": 109,
+      "attack": 18,
+      "type": 2
+    },
+    {
+      "name": "Centry",
+      "maxhealth": 42,
+      "minhealth": 38,
+      "attack": 9,
+      "type": 2
+    },
+    {
+      "name": "SlimeKing",
+      "maxhealth": 140,
+      "minhealth": 140,
+      "attack": 35,
+      "type": 3
+    }
+
+  ]
+}

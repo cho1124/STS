@@ -18,4 +18,5 @@ MonoBehaviour:
   startMana: 3
   playerPower: 0
   playerSpeed: 0
+  playerPrefab: {fileID: 896464581826343218, guid: 69202eeedc0763f47a05e3e5846fe85c, type: 3}
   playerStatuses: []

@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class Nodes
 {
     public GameObject currentGameObj;
@@ -18,7 +17,6 @@ public class Nodes
         nextGameObjs = new List<GameObject>();
     }
 }
-
 
 public class CreateNode : MonoBehaviour
 {
@@ -44,7 +42,7 @@ public class CreateNode : MonoBehaviour
 
     private GameObject currentSelection; // 현재 선택된 노드
     private List<Nodes> allNodes = new List<Nodes>();
-
+    
 
     private int canMoveNode = 0;
 
@@ -67,25 +65,16 @@ public class CreateNode : MonoBehaviour
         
         ConnectLine();
 
-       
-        //for(int i = 0; i <  numRows; i++)
-        //{
-        //    for(int j = 0; j < numColumns; j++)
-        //    {
-        //        if (nodes[i, j] != null && i == canMoveNode)
-        //        {
-        //            canMoveList.Add(nodes[i, j]);
-        //            
-        //        }
-        //    }
-        //}
-
-
-
         PrintConnectedNodes(startNode);
+        
+    }
+    private void OnEnable()
+    {
+        // PrintConnectedNodes(startNode);
+        StopCoroutine("BlinkCoroutine");
+        StartCoroutine("BlinkCoroutine");
 
     }
-
 
     private void Update()
     {
@@ -115,14 +104,49 @@ public class CreateNode : MonoBehaviour
                 // 충돌한 오브젝트가 canMoveList에 포함되어 있는지 확인
                 if (canMoveList.Contains(hit.collider.gameObject))
                 {
+                    
+
+
                     // 포함되어 있다면 해당 오브젝트의 정보를 로그로 출력
-                    Debug.Log("Clicked on: " + hit.collider.gameObject.name);
+                    //Debug.Log("Clicked on: " + hit.collider.gameObject.name);
                     currentSelection = hit.collider.gameObject;
                     currentSelection.SetActive(true);
                     Transform childTransform = currentSelection.transform.Find("Clear");
                     childTransform.gameObject.SetActive(true);
                     canMoveList.Clear();
                     PrintConnectedNodes(currentSelection);
+                    string tag = currentSelection.tag;
+                    switch (tag)
+                    {
+                        case "Monster":
+                            GameManager.instance.MapStateMachine.ChangeState(new CombatState(GameManager.instance));
+                            break;
+                        case "Event":
+                            GameManager.instance.MapStateMachine.ChangeState(new RandomState(GameManager.instance.MapStateMachine, GameManager.instance));
+                            break;
+                        case "Shop":
+                            GameManager.instance.MapStateMachine.ChangeState(new ShopState());
+                            break;
+                        case "Rest":
+                            GameManager.instance.MapStateMachine.ChangeState(new RestState());
+                            break;
+                        case "Chest":
+                            GameManager.instance.MapStateMachine.ChangeState(new ChestState());
+                            break;
+                        case "Elite":
+                            GameManager.instance.MapStateMachine.ChangeState(new EliteState());
+                            break;
+                        case "Boss":
+                            GameManager.instance.MapStateMachine.ChangeState(new BossState());
+                            break;
+                        default:
+                            Debug.Log("Unknown state.");
+                            break;
+                    }
+
+
+
+                    
                 }
                 else
                 {
@@ -164,9 +188,6 @@ public class CreateNode : MonoBehaviour
         canMoveNode++;
 
     }
-
-
-
 
     private IEnumerator BlinkCoroutine()
     {
@@ -216,8 +237,6 @@ public class CreateNode : MonoBehaviour
             }
         }
     }
-
-
 
 
     public void GenerateFirstFloor()
@@ -306,7 +325,6 @@ public class CreateNode : MonoBehaviour
         
     }
 
-
     public void ConnectNodes(GameObject node1, GameObject node2, int numberOfConnectors)
     {
         Vector3 direction = (node2.transform.position - node1.transform.position).normalized;
@@ -338,7 +356,6 @@ public class CreateNode : MonoBehaviour
             connector.transform.parent = linesParent.transform; // linesParent의 자식으로 설정
         }
     }
-
 
     public void DeleteWhite()
     {
@@ -530,13 +547,13 @@ public class CreateNode : MonoBehaviour
         if (currentNodeObject != null)
         {
             Debug.Log("Current Node Tag :  " + currentNodeObject.currentGameObj.tag);
-            Debug.Log("Current Node Floor :  " + currentNodeObject.currentFloor);
+            //Debug.Log("Current Node Floor :  " + currentNodeObject.currentFloor);
 
 
             foreach (GameObject nextNode in currentNodeObject.nextGameObjs)
             {
 
-                Debug.Log("Connected Node: " + nextNode.name);
+                //Debug.Log("Connected Node: " + nextNode.name);
                 canMoveList.Add(nextNode);
 
             }
@@ -545,8 +562,8 @@ public class CreateNode : MonoBehaviour
         {
             Debug.Log("No connected nodes found for the current node.");
         }
-        StopCoroutine("BlinkCoroutine");
-        StartCoroutine("BlinkCoroutine");
+        //StopCoroutine("BlinkCoroutine");
+        //StartCoroutine("BlinkCoroutine");
 
     }
 }

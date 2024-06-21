@@ -1,53 +1,39 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
-public class Monster : Character
+public class Monster : MonoBehaviour
 {
-    public MonsterData data;
+    public string monsterName;
+    public int maxHealth;
+    public int minHealth;
+    public float attack;
+    public int type;
+    public int currentHealth;
 
-    private void Start()
+    private void OnEnable()
     {
-        InitializeMonster();
+        currentHealth = Random.Range(minHealth, maxHealth + 1);
     }
 
-    private void InitializeMonster()
+
+    public void Initialize(MonsterData data)
     {
-        if (data != null)
-        {
-            characterName = data.monsterName;
-            maxHealth = data.maxHealth;
-            currentHealth = maxHealth;
-            attackPower = data.attackPower;
-            defense = 0;
-        }
-        else
-        {
-            Debug.LogError("Monster data not assigned.");
-        }
+        monsterName = data.name;
+        maxHealth = data.maxhealth;
+        minHealth = data.minhealth;
+        attack = data.attack;
+        type = data.type;
+        //currentHealth = Random.Range(minHealth, maxHealth + 1);
+
+        // 필요한 초기화 작업을 여기에 추가할 수 있습니다.
+        //Debug.Log($"몬스터 생성: {monsterName}, 체력: {minHealth}-{maxHealth}, 공격력: {attack}");
+
+
+
+
+    }
+    public int GetCurrentHealth()
+    {
+        return currentHealth;
     }
 
-    public override void Attack(Character target)
-    {
-        int damage = Mathf.Max(0, attackPower - target.defense);
-        target.TakeDamage(damage);
-        Debug.Log(characterName + " attacks " + target.characterName + " for " + damage + " damage.");
-    }
-
-    public override void TakeDamage(int damage)
-    {
-        currentHealth = Mathf.Max(0, currentHealth - damage);
-        if (currentHealth == 0)
-        {
-            Die();
-        }
-    }
-
-    private void Die()
-    {
-        Debug.Log(characterName + " has been defeated.");
-        Destroy(gameObject);
-    }
 }
-

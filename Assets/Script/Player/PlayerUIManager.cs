@@ -8,6 +8,9 @@ public class PlayerUIManager : MonoBehaviour
     public Text floorText;
     public Text ManaText;
     public Text DeckText;
+
+
+
     
     void Start()
     {
@@ -29,6 +32,16 @@ public class PlayerUIManager : MonoBehaviour
     public void UpdateFloorText(int floor)
     {
         floorText.text = $"{floor}";
+    }
+
+    public void UpdateDeckText(int count)
+    {
+        DeckText.text = $"{count}";
+    }
+
+    public void UpdateManaText(int maxMana, int currentMana)
+    {
+        ManaText.text = $"{maxMana}/{currentMana}";
     }
 
 

@@ -6,7 +6,8 @@ using UnityEngine.EventSystems;
 
 public class ThisCard : MonoBehaviour
 {
-    public List<Card> thisCard = new List<Card>();
+    //public List<Card> thisCard = new List<Card>();
+    public Card thisCard;
     public int thisId;
 
     public int id;
@@ -35,15 +36,15 @@ public class ThisCard : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        thisCard = new Card();
         //thisCard[1] = CardDatabase.cardList[5];
-        thisCard[0] = CardDatabase.cardList[thisId];
-        id = thisCard[0].id;
-        cardName = thisCard[0].cardName;
-        cost = thisCard[0].cost;
-        type = thisCard[0].type;
+        thisCard = CardDatabase.cardList[thisId];
+        id = thisCard.id;
+        cardName = thisCard.cardName;
+        cost = thisCard.cost;
+        type = thisCard.type;
 
-        cardDescription = thisCard[0].cardDescription;
+        cardDescription = thisCard.cardDescription;
 
 
         nameText.text = "" + cardName;
@@ -51,10 +52,10 @@ public class ThisCard : MonoBehaviour
         typeText.text = "" + type;
         descriptionText.text = "" + cardDescription;
 
-        cardSprite = thisCard[0].cardImage;
+        cardSprite = thisCard.cardImage;
 
-        rare_type_Image.sprite = thisCard[0].rare_type_Image;
-        rareImage.sprite = thisCard[0].rare_Image;
+        rare_type_Image.sprite = thisCard.rare_type_Image;
+        rareImage.sprite = thisCard.rare_Image;
 
         cardImage.sprite = cardSprite;
     }

@@ -30,18 +30,26 @@ public class PlayerDeckManager : MonoBehaviour
         InitializeDeck(); // 게임 시작 시 덱 초기화
     }
 
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Z))
+        {
+            InitializeDeck();
+        }
+    }
+
 
     // 플레이어 덱 초기화하는 메서드
     public void InitializeDeck()
     {
         Deck.Clear();
-        int a = Random.Range(0, 23);
+        int a;
 
         // 여기서 플레이어 덱을 초기화하거나 불러오는 코드를 작성
         // 예를 들어, Deck.Add(CardDatabase.cardList[0]); 같은 코드들을 여기서 사용할 수 있음
         for (int i = 0; i < 5; i++)
         {
-            a = Random.Range(0, 23);
+            a = Random.Range(1, 22);
             Deck.Add(CardDatabase.cardList[a]);
         }
 
@@ -51,7 +59,7 @@ public class PlayerDeckManager : MonoBehaviour
         }
         for(int i = 0; i < 5; i++)
         {
-            Deck.Add(CardDatabase.cardList[3]);
+            Deck.Add(CardDatabase.cardList[0]);
         }
 
         Deck.Add(CardDatabase.cardList[1]);

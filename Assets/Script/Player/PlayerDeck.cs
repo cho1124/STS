@@ -108,8 +108,6 @@ public class PlayerDeck : MonoBehaviour
     }
     public void DrawCard()
     {
-        
-
         if (Deck.Count == 0)
         {
             ReshuffleDiscardPileIntoDeck();
@@ -119,7 +117,6 @@ public class PlayerDeck : MonoBehaviour
         {
             RectTransform playerHandTransform = playerHand.GetComponent<RectTransform>();
 
-            // Assuming drawnCard is the GameObject representing the card
             GameObject drawnCard = Deck[0]; // Get the card GameObject from Deck list
             Deck.RemoveAt(0);
             drawnCard.SetActive(true);
@@ -130,26 +127,15 @@ public class PlayerDeck : MonoBehaviour
                 DiscardCard(drawnCard);
                 return;
             }
-            //playerHand.
-            //playerHand
+
             RectTransform drawnCardRectTransform = drawnCard.GetComponent<RectTransform>();
             drawnCardRectTransform.SetParent(playerHandTransform);
-            //drawnCard.transform.DOMove(playerHand.transform.position, 1f);
-            //drawnCard.transform.DORotate(playerHand.transform.rotation, 1f);
-            // Set the parent to playerHandTransform
-
-
 
             cardAllignment();
-
-
-            // Set the position of the card relative to playerHandTransform
-
-            //drawnCard.SetActive(true); // Activate the card
         }
         else
         {
-            //Debug.Log("Deck is empty and discard pile has no cards!");
+            // Deck is empty and discard pile has no cards
         }
     }
 
@@ -157,7 +143,6 @@ public class PlayerDeck : MonoBehaviour
     {
         List<RectTransform> originalRectTransforms = RoundAlignmentUI(RightHandTr, leftHandTr, playerHand.handCards.Count, 0.5f);
 
-        // 카드 이동 및 회전 애니메이션 적용
         for (int i = 0; i < playerHand.handCards.Count; i++)
         {
             GameObject targetCard = playerHand.handCards[i];
@@ -171,7 +156,6 @@ public class PlayerDeck : MonoBehaviour
             targetRectTransform.DOAnchorPos(targetRectTransform.anchoredPosition, 1f).OnComplete(() =>
             {
                 //Debug.Log("Card movement complete!");
-
                 // 이동이 완료된 후에 다른 작업을 수행하거나 필요한 처리를 여기에 추가할 수 있습니다.
             });
 
@@ -212,11 +196,12 @@ public class PlayerDeck : MonoBehaviour
                 targetRot = Quaternion.Euler(0, 0, Mathf.Lerp(-20, 20, objLerps[i])); // 카드 회전 각도를 반대로 변경
             }
 
-            RectTransform newRectTransform = new GameObject("Object" + i).AddComponent<RectTransform>();
-            newRectTransform.anchoredPosition = targetPos;
-            newRectTransform.localRotation = targetRot;
+            // 기존에 생성된 RectTransform 사용
+            RectTransform existingRectTransform = playerHand.handCards[i].GetComponent<RectTransform>();
+            existingRectTransform.anchoredPosition = targetPos;
+            existingRectTransform.localRotation = targetRot;
 
-            results.Add(newRectTransform);
+            results.Add(existingRectTransform);
         }
 
         return results;
