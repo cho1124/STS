@@ -37,10 +37,14 @@ public class PlayerDeck : MonoBehaviour
     void Start()
     {
 
-        MakeCard();
-        Shuffle();
-        DrawInitialHand();
+        
     }
+
+    private void OnEnable()
+    {
+        
+    }
+
 
 
     private void Update()
@@ -87,7 +91,9 @@ public class PlayerDeck : MonoBehaviour
 
     public void ActiveCard()
     {
-
+        MakeCard();
+        Shuffle();
+        //DrawInitialHand();
     }
 
     public void NotActivecard()
@@ -95,6 +101,32 @@ public class PlayerDeck : MonoBehaviour
 
     }
 
+    
+
+
+    public void ClearDeck()
+    {
+        Deck.Clear();
+
+        List<GameObject> objectsToDestroy = new List<GameObject>();
+
+        foreach (Transform child in transform)
+        {
+            if (child.gameObject.name.Contains("Card"))
+            {
+                objectsToDestroy.Add(child.gameObject);
+            }
+        }
+
+        foreach (GameObject obj in objectsToDestroy)
+        {
+            Destroy(obj);
+        }
+
+        playerHand.ClearHand();
+       
+        playerDiscard.ClearDiscardPile();
+    }
 
     public void Shuffle()
     {
@@ -139,7 +171,7 @@ public class PlayerDeck : MonoBehaviour
         }
     }
 
-    void cardAllignment()
+    public void cardAllignment()
     {
         List<RectTransform> originalRectTransforms = RoundAlignmentUI(RightHandTr, leftHandTr, playerHand.handCards.Count, 0.5f);
 
@@ -237,6 +269,29 @@ public class PlayerDeck : MonoBehaviour
         cardAllignment();
     }
 
+    public void DiscardAll()
+    {
+        if (playerHand.handCards.Count == 0)
+        {
+            return;
+        }
+
+        List<GameObject> cardsToDiscard = new List<GameObject>(playerHand.handCards);
+
+        foreach (GameObject card in cardsToDiscard)
+        {
+            playerHand.RemoveCard(card);
+            playerDiscard.AddToDiscardPile(card);
+            card.SetActive(false);
+            card.transform.SetParent(playerDiscard.transform);
+            card.transform.localPosition = Vector3.zero;
+        }
+
+        
+    }
+
+
+
     private void ReshuffleDiscardPileIntoDeck()
     {
         if (playerDiscard.discardedCards.Count > 0)
@@ -278,6 +333,7 @@ public class PlayerDeck : MonoBehaviour
         cardObject.transform.localPosition = originalPosition;
         cardObject.transform.localRotation = originalRotation;
         rectTransform.SetSiblingIndex(originalSiblingIndex);
+        //cardAllignment();
     }
 
     public void CardMouseDown()

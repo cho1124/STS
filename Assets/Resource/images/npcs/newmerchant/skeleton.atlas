@@ -1,0 +1,48 @@
+
+skeleton.png
+size: 203,234
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+images/cloak
+  rotate: true
+  xy: 2, 2
+  size: 137, 171
+  orig: 137, 171
+  offset: 0, 0
+  index: -1
+images/hoodbg
+  rotate: true
+  xy: 80, 188
+  size: 44, 59
+  orig: 44, 59
+  offset: 0, 0
+  index: -1
+images/legleft
+  rotate: false
+  xy: 141, 188
+  size: 60, 44
+  orig: 60, 44
+  offset: 0, 0
+  index: -1
+images/mask
+  rotate: true
+  xy: 31, 190
+  size: 42, 47
+  orig: 43, 48
+  offset: 0, 1
+  index: -1
+images/neck
+  rotate: false
+  xy: 2, 205
+  size: 27, 27
+  orig: 27, 27
+  offset: 0, 0
+  index: -1
+images/shadow
+  rotate: false
+  xy: 2, 141
+  size: 194, 45
+  orig: 200, 45
+  offset: 0, 0
+  index: -1

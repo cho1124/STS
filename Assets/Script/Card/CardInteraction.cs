@@ -4,37 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Net;
 using DG.Tweening;
-
-
-public enum CardEffectType
-{
-    None,
-    DealDamage,
-    ApplyVulnerable,
-    DealDamageBasedOnArmor,
-    MultiplyStrengthEffect,
-    DrawCards,
-    ApplyBuffToPlayer,
-    GainArmor,
-    GainStrength,
-    GainMana,
-    ReduceOpponentStrength,
-    DoubleArmor,
-    NoArmorExpiration,
-    IncreaseDefense,
-    StartTurnNoArmorExpiration,
-    IncreaseStrengthEveryTurn,
-    GainMaxHealthOnCritical,
-    DealDamageToAllEnemies,
-    MultiplyDamageEffect,
-    ApplyCriticalDamageEffect,
-    GainEnergy,
-    LoseHealth,
-    EnemyMovement,
-    PhysicalAttack,
-    RemoveShieldEffect
-}
-
+using System;
 
 public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -65,12 +35,15 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private LineRenderer lineRenderer;
     private ThisCard thiscard;
-    public CardEffectType effectType;
+    //private PlayerDeck playerDeck;
+    
+    
     public string cardDescription;
 
     void Start()
     {
         playerDeck = FindObjectOfType<PlayerDeck>();
+        
         thiscard = GetComponent<ThisCard>();
         
         originalScale = transform.localScale;
@@ -80,7 +53,7 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = dotCount + 1;
-
+        ;
         //playerDeck.Initializecard(transform, out originalScale, out originalSiblingIndex, out rectTransform);
     }
 
@@ -103,44 +76,40 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     }
 
     
-
-    
-
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if(thiscard.cost <= GameManager.instance.currentMana)
+
+        if (thiscard.effectTypes.Contains(CardEffectType.DealDamage) || thiscard.effectTypes.Contains(CardEffectType.ReduceOpponentStrength))
         {
-            if (thiscard.type == "공격")
+            //transform.position = eventData.position;
+
+
+            arrowPrefab = Instantiate(playerDeck.arrowPrefab);
+            arrowPrefab.transform.SetParent(playerDeck.CombatCanvas.transform);
+            arrowPrefab.transform.position = eventData.position;
+            arrowPrefab_image = arrowPrefab.GetComponent<Image>();
+            arrowPrefab_originalColor = arrowPrefab.GetComponent<Image>().color;
+
+            startPoint = eventData.position;
+
+            for (int i = 0; i < dotCount; i++)
             {
-                //transform.position = eventData.position;
-
-
-                arrowPrefab = Instantiate(playerDeck.arrowPrefab);
-                arrowPrefab.transform.SetParent(playerDeck.CombatCanvas.transform);
-                arrowPrefab.transform.position = eventData.position;
-                arrowPrefab_image = arrowPrefab.GetComponent<Image>();
-                arrowPrefab_originalColor = arrowPrefab.GetComponent<Image>().color;
-
-                startPoint = eventData.position;
-
-                for (int i = 0; i < dotCount; i++)
+                if (i >= dots.Count)
                 {
-                    if (i >= dots.Count)
-                    {
-                        // 점 생성
-                        GameObject dot = Instantiate(playerDeck.dotPrefab, arrowPrefab.transform);
-                        dots.Add(dot);
-                    }
-
-                    // 점 위치 설정
-
+                    // 점 생성
+                    GameObject dot = Instantiate(playerDeck.dotPrefab, arrowPrefab.transform);
+                    dots.Add(dot);
                 }
-            }
-            else
-            {
-                transform.position = eventData.position;
+
+                // 점 위치 설정
+
             }
         }
+        else
+        {
+            transform.position = eventData.position;
+        }
+
 
 
     }
@@ -149,6 +118,7 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         // UI 요소를 마우스 위치로 이동
 
+        
         if(arrowPrefab != null)
         {
             
@@ -159,7 +129,7 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             Vector2 direction = eventData.position - startPoint; //행복한 수학시간, 시작지점에서 현재 지점까지의 벡터값을 구해와서
 
 
-            arrowPrefab.transform.up = direction.normalized;
+            arrowPrefab.transform.up = direction;
 
 
             //Debug.Log(direction);
@@ -167,7 +137,7 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             Vector2 worldPoint = Camera.main.ScreenToWorldPoint(eventData.position);
             RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero);
 
-            if (hit.collider != null && arrowPrefab_image != null)
+            if (hit.collider != null)
             {
                 // 적 오브젝트를 감지
                 if (hit.collider.CompareTag("Enemy"))
@@ -214,25 +184,310 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 Destroy(dot);
             }
             dots.Clear();
+            if(AimedMonster != null)
+            {
+                Debug.Log(AimedMonster.name);
+
+                if (GameManager.instance.currentMana < thiscard.cost)
+                {
+                    Debug.Log("카드를 사용할 수 없습니다.");
+                    //transform.Translate(originalPosition);
+                }
+                else
+                {
+                    GameManager.instance.currentMana -= thiscard.cost;
+                    playerDeck.DiscardCard(gameObject);
+                    ApplyCardEffect(AimedMonster.GetComponent<Monster>());
+                }
+
+
+                
+            }
+            
+
+
         }
         else
         {
 
             if(transform.position.y > 400)
             {
-                playerDeck.DiscardCard(gameObject);
+                if (GameManager.instance.currentMana < thiscard.cost)
+                {
+                    Debug.Log("카드를 사용할 수 없습니다.");
+                    transform.Translate(originalPosition);
+                    playerDeck.cardAllignment();
+                }
+                else
+                {
+                    GameManager.instance.currentMana -= thiscard.cost;
+                    ApplyCardEffect(AimedMonster.GetComponent<Monster>());
+
+                    foreach(CardEffectType cardEffectType in thiscard.effectTypes)
+                    {
+
+                    }
+                    if(thiscard.effectTypes.Contains(CardEffectType.Deletable))
+                    {
+                        //소멸칸으로
+                    }
+
+                    playerDeck.DiscardCard(gameObject);
+                }
+
+                
+
+                
             }
             else
             {
                 //transform.position = originalPosition;
                 transform.Translate(originalPosition);
+                playerDeck.cardAllignment();
             }
 
             
         }
 
         
+
+
+        
     }
+
+    private void ApplyCardEffectToMonster(ThisCard thisCard, Monster target)
+    {
+        //if (cardEffectHandler != null)
+        //{
+        //    cardEffectHandler.ApplyCardEffect(card, target);
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("CardEffectHandler not found!");
+        //}
+
+        //if(thiscard.effectTypes)
+
+        Debug.Log("applyed!");
+
+
+    }
+
+    private void ApplyCardEffect(Monster monster)
+    {
+        for (int i = 0; i < thiscard.effectTypes.Count; i++)
+        {
+            CardEffectType cardEffectType = thiscard.effectTypes[i];
+            int effectValue = thiscard.effectValues[i];
+
+            switch (cardEffectType)
+            {
+                case CardEffectType.None:
+                    // 아무런 효과도 없음
+                    break;
+                case CardEffectType.DealDamage:
+                    DealDamage(effectValue, monster);
+                    break;
+                case CardEffectType.ApplyVulnerable:
+                    ApplyVulnerable(effectValue, monster);
+                    break;
+                case CardEffectType.MultiplyStrengthEffect:
+                    MultiplyStrengthEffect(effectValue);
+                    break;
+                case CardEffectType.DrawCards:
+                    DrawCards(effectValue);
+                    break;
+                case CardEffectType.GainStrength:
+                    GainStrength(effectValue);
+                    break;
+                case CardEffectType.DealDamageBasedOnArmor:
+                    DealDamageBasedOnArmor(effectValue, monster);
+                    break;
+                case CardEffectType.NoArmorExpiration:
+                    NoArmorExpiration(effectValue);
+                    break;
+                case CardEffectType.DoubleArmor:
+                    DoubleArmor(effectValue);
+                    break;
+                case CardEffectType.StartTurnNoArmorExpiration:
+                    StartTurnNoArmorExpiration(effectValue);
+                    break;
+                case CardEffectType.GainArmor:
+                    GainArmor(effectValue);
+                    break;
+                case CardEffectType.IncreaseStrengthEveryTurn:
+                    IncreaseStrengthEveryTurn(effectValue);
+                    break;
+                case CardEffectType.MultiplyDamageEffect:
+                    MultiplyDamageEffect(effectValue);
+                    break;
+                case CardEffectType.IncreaseDefense:
+                    IncreaseDefense(effectValue);
+                    break;
+                case CardEffectType.GainMaxHealthOnCritical:
+                    GainMaxHealthOnCritical(effectValue);
+                    break;
+                case CardEffectType.DealDamageToAllEnemies:
+                    DealDamageToAllEnemies(effectValue);
+                    break;
+                case CardEffectType.ReduceOpponentStrength:
+                    ReduceOpponentStrength(effectValue, monster);
+                    break;
+                case CardEffectType.MutipleAttack:
+                    MultipleAttack(effectValue, monster);
+                    break;
+                case CardEffectType.ReduceStrength:
+                    ReduceStrength(effectValue, monster);
+                    break;
+                case CardEffectType.EveryTurnStart:
+                    EveryTurnStart(effectValue);
+                    break;
+                case CardEffectType.EveryTurnEnd:
+                    EveryTurnEnd(effectValue);
+                    break;
+                case CardEffectType.GainEnergy:
+                    GainEnergy(effectValue);
+                    break;
+                case CardEffectType.ReduceHealth:
+                    ReduceHealth(effectValue, monster);
+                    break;
+                case CardEffectType.DoubleStrength:
+                    DoubleStrength(effectValue);
+                    break;
+                case CardEffectType.Deletable:
+                    Deletable();
+                    break;
+            }
+        }
+    }
+
+    // 각 효과에 대한 구체적인 메서드를 정의합니다.
+    private void DealDamage(int value, Monster monster)
+    {
+        monster.TakeDamage(value);
+
+        // 피해를 주는 로직 구현
+    }
+
+    private void ApplyVulnerable(int value, Monster monster)
+    {
+        VulnerabilityEffect vulnerabilityEffect = ScriptableObject.CreateInstance<VulnerabilityEffect>();
+        vulnerabilityEffect.effectName = "Vulnerability";
+        vulnerabilityEffect.duration = value; // 지속 시간으로 사용
+        //vulnerabilityEffect.defenseReduction = value; // 방어력 감소량으로 사용
+
+        monster.ApplyStatusEffect(vulnerabilityEffect);
+    }
+    private void MultiplyStrengthEffect(int value)
+    {
+        // 힘의 효과를 증폭시키는 로직 구현
+    }
+
+    private void DrawCards(int value)
+    {
+        // 카드를 뽑는 로직 구현
+    }
+
+    private void GainStrength(int value)
+    {
+        // 힘을 얻는 로직 구현
+    }
+
+    private void DealDamageBasedOnArmor(int value, Monster monster)
+    {
+        // 현재 방어도만큼 피해를 주는 로직 구현
+    }
+
+    private void NoArmorExpiration(int value)
+    {
+        // 방어도 만료를 없애는 로직 구현
+    }
+
+    private void DoubleArmor(int value)
+    {
+        // 방어도를 두 배로 증가시키는 로직 구현
+    }
+
+    private void StartTurnNoArmorExpiration(int value)
+    {
+        // 턴 시작 시 방어도 만료를 없애는 로직 구현
+    }
+
+    private void GainArmor(int value)
+    {
+        // 방어도를 얻는 로직 구현
+    }
+
+    private void IncreaseStrengthEveryTurn(int value)
+    {
+        // 매 턴마다 힘이 증가하는 로직 구현
+    }
+
+    private void MultiplyDamageEffect(int value)
+    {
+        // 피해 효과를 배가하는 로직 구현
+    }
+
+    private void IncreaseDefense(int value)
+    {
+        // 민첩을 증가시키는 로직 구현
+    }
+
+    private void GainMaxHealthOnCritical(int value)
+    {
+        // 치명타 시 최대 체력을 얻는 로직 구현
+    }
+
+    private void DealDamageToAllEnemies(int value)
+    {
+        // 모든 적에게 피해를 주는 로직 구현
+    }
+
+    private void ReduceOpponentStrength(int value, Monster monster)
+    {
+        // 적의 힘을 감소시키는 로직 구현
+    }
+
+    private void MultipleAttack(int value, Monster monster)
+    {
+        // 다중 공격 로직 구현
+    }
+
+    private void ReduceStrength(int value, Monster monster)
+    {
+        // 힘 감소 로직 구현
+    }
+
+    private void EveryTurnStart(int value)
+    {
+        // 매 턴 시작 시의 로직 구현
+    }
+
+    private void EveryTurnEnd(int value)
+    {
+        // 매 턴 끝날 시의 로직 구현
+    }
+
+    private void GainEnergy(int value)
+    {
+        // 에너지를 얻는 로직 구현
+    }
+
+    private void ReduceHealth(int value, Monster monster)
+    {
+        // 체력 감소 로직 구현
+    }
+
+    private void DoubleStrength(int value)
+    {
+        // 힘을 두 배로 증가시키는 로직 구현
+    }
+
+    private void Deletable()
+    {
+        // 카드 삭제 가능 로직 구현
+    }
+
 
     Vector2 BezierCurve(Vector2 startPoint, Vector2 controlPoint, Vector2 endPoint, float t)
     {
@@ -276,243 +531,8 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         Monster monster = AimedMonster.GetComponent<Monster>();
         //monster.currentHealth -= thiscard.
     }
-    public void ProcessCardEffect()
-    {
-        switch (effectType)
-        {
-            case CardEffectType.DealDamage:
-                //DealDamage();
-                break;
-            case CardEffectType.ApplyVulnerable:
-                //ApplyVulnerable();
-                break;
-            case CardEffectType.DealDamageBasedOnArmor:
-                //DealDamageBasedOnArmor();
-                break;
-            case CardEffectType.MultiplyStrengthEffect:
-                //MultiplyStrengthEffect();
-                break;
-            case CardEffectType.DrawCards:
-                //DrawCards();
-                break;
-            case CardEffectType.ApplyBuffToPlayer:
-                //ApplyBuffToPlayer();
-                break;
-            case CardEffectType.GainArmor:
-                //GainArmor();
-                break;
-            case CardEffectType.GainStrength:
-                //GainStrength();
-                break;
-            case CardEffectType.GainMana:
-                //GainMana();
-                break;
-            case CardEffectType.ReduceOpponentStrength:
-                //ReduceOpponentStrength();
-                break;
-            case CardEffectType.DoubleArmor:
-                //DoubleArmor();
-                break;
-            case CardEffectType.NoArmorExpiration:
-                //NoArmorExpiration();
-                break;
-            case CardEffectType.IncreaseDefense:
-                //IncreaseDefense();
-                break;
-            case CardEffectType.StartTurnNoArmorExpiration:
-                //StartTurnNoArmorExpiration();
-                break;
-            case CardEffectType.IncreaseStrengthEveryTurn:
-                //IncreaseStrengthEveryTurn();
-                break;
-            case CardEffectType.GainMaxHealthOnCritical:
-                //GainMaxHealthOnCritical();
-                break;
-            case CardEffectType.DealDamageToAllEnemies:
-                //DealDamageToAllEnemies();
-                break;
-            case CardEffectType.MultiplyDamageEffect:
-                //MultiplyDamageEffect();
-                break;
-            case CardEffectType.ApplyCriticalDamageEffect:
-                //ApplyCriticalDamageEffect();
-                break;
-            case CardEffectType.GainEnergy:
-                //GainEnergy();
-                break;
-            case CardEffectType.LoseHealth:
-                //LoseHealth();
-                break;
-            case CardEffectType.EnemyMovement:
-                //EnemyMovement();
-                break;
-            case CardEffectType.PhysicalAttack:
-                //PhysicalAttack();
-                break;
-            case CardEffectType.RemoveShieldEffect:
-                //RemoveShieldEffect();
-                break;
-            default:
-                Debug.LogWarning("Unhandled card effect: " + cardDescription);
-                break;
-        }
-    }
-    private void DetermineEffectType()
-    {
-        cardDescription = thiscard.cardDescription;
 
-
-        if (cardDescription.Contains("피해를") && cardDescription.Contains("줍니다"))
-        {
-            if (cardDescription.Contains("현재 방어도만큼"))
-            {
-                effectType = CardEffectType.DealDamageBasedOnArmor;
-            }
-            else
-            {
-                effectType = CardEffectType.DealDamage;
-            }
-        }
-        else if (cardDescription.Contains("취약을 부여합니다"))
-        {
-            effectType = CardEffectType.ApplyVulnerable;
-        }
-        else if (cardDescription.Contains("힘의 효과가 적용됩니다"))
-        {
-            effectType = CardEffectType.MultiplyStrengthEffect;
-        }
-        else if (cardDescription.Contains("카드를") && cardDescription.Contains("뽑습니다"))
-        {
-            effectType = CardEffectType.DrawCards;
-        }
-        else if (cardDescription.Contains("힘을") && cardDescription.Contains("얻습니다"))
-        {
-            effectType = CardEffectType.GainStrength;
-        }
-        else if (cardDescription.Contains("방어도를") && cardDescription.Contains("얻습니다"))
-        {
-            if (cardDescription.Contains("턴 종료시"))
-            {
-                effectType = CardEffectType.NoArmorExpiration;
-            }
-            else if (cardDescription.Contains("배로 증가합니다"))
-            {
-                effectType = CardEffectType.DoubleArmor;
-            }
-            else if (cardDescription.Contains("시 방어도가 사라지지 않습니다"))
-            {
-                effectType = CardEffectType.StartTurnNoArmorExpiration;
-            }
-            else
-            {
-                effectType = CardEffectType.GainArmor;
-            }
-        }
-        else if (cardDescription.Contains("힘이") && cardDescription.Contains("증가합니다"))
-        {
-            if (cardDescription.Contains("매 턴 시작시"))
-            {
-                effectType = CardEffectType.IncreaseStrengthEveryTurn;
-            }
-            else if (cardDescription.Contains("배로 증가합니다"))
-            {
-                effectType = CardEffectType.MultiplyDamageEffect;
-            }
-            else
-            {
-                effectType = CardEffectType.IncreaseDefense;
-            }
-        }
-        else if (cardDescription.Contains("치명타라면") && cardDescription.Contains("최대 체력이"))
-        {
-            effectType = CardEffectType.GainMaxHealthOnCritical;
-        }
-        else if (cardDescription.Contains("적 전체에게 피해를 줍니다"))
-        {
-            effectType = CardEffectType.DealDamageToAllEnemies;
-        }
-        else if (cardDescription.Contains("적의") && cardDescription.Contains("감소시킵니다"))
-        {
-            effectType = CardEffectType.ReduceOpponentStrength;
-        }
-        else if (cardDescription.Contains("턴 시작시 방어도가 사라지지 않습니다"))
-        {
-            effectType = CardEffectType.StartTurnNoArmorExpiration;
-        }
-        else if (cardDescription.Contains("소멸"))
-        {
-            // 소멸 처리 로직을 추가할 수 있습니다.
-            // 예: effectType = CardEffectType.RemoveEffect;
-            Debug.Log("소멸 효과 처리");
-            effectType = CardEffectType.None; // 임시로 None으로 설정
-        }
-        else
-        {
-            effectType = CardEffectType.None;
-            Debug.LogWarning("Unhandled card effect: " + cardDescription);
-        }
-    }
-
-
-    // 설명에서 데미지 양을 추출하는 메서드 예시
-    int ParseDamageFromDescription(string description)
-    {
-        int damage = 0;
-        // 설명에서 데미지 양을 추출하는 로직을 구현
-        // 예를 들어, "데미지: 5"와 같은 형식에서 숫자 부분을 추출하거나, 특정 패턴을 찾아서 값을 파싱할 수 있습니다.
-        // 이 예시에서는 간단하게 5로 설정
-        damage = 5;
-        return damage;
-    }
-
-    // 상대에게 데미지를 가하는 메서드 예시
-    void DealDamageToOpponent(int damageAmount)
-    {
-        // 상대에게 데미지를 주는 로직을 구현
-        // 예를 들어, 상대의 체력을 감소시키는 등의 동작을 수행할 수 있습니다.
-        Debug.Log("Deal " + damageAmount + " damage to opponent!");
-    }
-
-    // 설명에서 회복할 마나 양을 추출하는 메서드 예시
-    int ParseManaRecoveryFromDescription(string description)
-    {
-        int mana = 0;
-        // 설명에서 회복할 마나 양을 추출하는 로직을 구현
-        // 예를 들어, "마나 회복: 2"와 같은 형식에서 숫자 부분을 추출하거나, 특정 패턴을 찾아서 값을 파싱할 수 있습니다.
-        // 이 예시에서는 간단하게 2로 설정
-        mana = 2;
-        return mana;
-    }
-
-    // 마나를 회복하는 메서드 예시
-    void RestoreMana(int manaAmount)
-    {
-        // 마나를 회복하는 로직을 구현
-        // 예를 들어, 현재 플레이어의 마나를 증가시키는 등의 동작을 수행할 수 있습니다.
-        Debug.Log("Restore " + manaAmount + " mana!");
-    }
-
-    // 설명에서 버프를 적용하는 메서드 예시
-    void ApplyBuffToPlayer(string description)
-    {
-        // 버프를 적용하는 로직을 구현
-        // 예를 들어, 플레이어에게 일시적인 강화를 부여하는 등의 동작을 수행할 수 있습니다.
-        Debug.Log("Apply buff to player: " + description);
-    }
-
-    // 설명에서 카드를 뽑는 메서드 예시
-    void DrawCards(string description)
-    {
-        // 카드를 뽑는 로직을 구현
-        // 예를 들어, 플레이어의 덱에서 카드를 뽑는 등의 동작을 수행할 수 있습니다.
-        Debug.Log("Draw cards: " + description);
-    }
-
-   void extinctionCards(string description)
-    {
-        Debug.Log("소멸됨: ");
-    }
-
+    
 
 
 

@@ -4,9 +4,18 @@ using UnityEngine;
 
 public class Player : Character
 {
+    //public CharacterData characterData;
+
     private void Start()
     {
+
+        CharacterData data = GameManager.instance.playerData;
+
+        maxHealth = data.maxHealth;
+        characterName = data.characterName;
+        
         currentHealth = maxHealth;
+        isBaricate = false;
     }
 
     public override void Attack(Character target)
@@ -17,19 +26,16 @@ public class Player : Character
 
     public override void TakeDamage(int damage)
     {
-        currentHealth = Mathf.Max(0, currentHealth - damage);
+
+        currentHealth -= (int)(damage * damageTakenMultiplier);
         GameManager.instance.UpdateAllUI();
-        if (currentHealth == 0)
+        if (currentHealth <= 0)
         {
             Die();
         }
     }
 
-    public void SetDefense(int def)
-    {
-
-    }
-
+    
     private void Die()
     {
         Debug.Log(characterName + " has been defeated.");

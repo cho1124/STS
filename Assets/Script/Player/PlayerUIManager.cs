@@ -6,8 +6,9 @@ public class PlayerUIManager : MonoBehaviour
     public Text healthText; // 체력을 표시할 Text UI 요소
     public Text goldText;
     public Text floorText;
-    public Text ManaText;
+    //public Text ManaText;
     public Text DeckText;
+    public GameObject StartCombatUI;
 
 
 
@@ -21,7 +22,7 @@ public class PlayerUIManager : MonoBehaviour
     // 체력을 업데이트하는 함수
     public void UpdateHealthText(int currentHealth, int maxHealth)
     {
-        healthText.text = $" {maxHealth} / {currentHealth}";
+        healthText.text = $" {currentHealth} / {maxHealth}";
     }
 
     public void UpdateGoldText(int gold)
@@ -39,10 +40,7 @@ public class PlayerUIManager : MonoBehaviour
         DeckText.text = $"{count}";
     }
 
-    public void UpdateManaText(int maxMana, int currentMana)
-    {
-        ManaText.text = $"{maxMana}/{currentMana}";
-    }
+   
 
 
 }

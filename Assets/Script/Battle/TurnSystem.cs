@@ -1,53 +1,49 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using UnityEngine.UI;
-
 
 public class TurnSystem : MonoBehaviour
 {
-
     public bool isMyTurn;
     public int myTurn;
-    
+    public PlayerDeck playerDeck;
     public Text turnText;
+    public Text manaText;
 
-    public int maxMana;
-    public int currentMana;
-    public Text manatext;
+    public GameObject myTurnImage;
+    public GameObject enemyTurnImage;
+    public GameObject startCombatImage;
+    public Text turnCountText;
 
-    public GameObject myturnImage;
-    public GameObject enemyturnImage;
-    public Text turncountText;
+    public MonsterPatternHandler monsterPatternHandler;
 
+    public List<Monster> monsters;
+    //public Player player;
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        isMyTurn = true;
-        myTurn = 1;
-        currentMana = maxMana;
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.T))
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            if(isMyTurn)
+            if (isMyTurn)
             {
                 EndMyTurn();
             }
             else
             {
-                EndOponentTurn();
+                EndOpponentTurn();
             }
         }
 
-        if(isMyTurn == true)
+        if(Input.GetKeyDown(KeyCode.K)) 
+        {
+            foreach(Monster monster in monsters)
+            {
+                monster.TakeDamage(300);
+            }
+        }
+
+        if (isMyTurn)
         {
             turnText.text = "턴 종료";
         }
@@ -55,75 +51,152 @@ public class TurnSystem : MonoBehaviour
         {
             turnText.text = "적의 턴";
         }
-        manatext.text = currentMana + "/" + maxMana;
+        //manaText.text = currentMana + "/" + maxMana;
+    }
 
+
+    public void StartBattle()
+    {
+        playerDeck = FindObjectOfType<PlayerDeck>();
+        playerDeck.ClearDeck();
+        
+        playerDeck.ActiveCard();
+        isMyTurn = true;
+        myTurn = 1;
+        //InitializeMonster();
+        
+        StartPlayerTurn();
+        InitializeMonster();
+        StartCoroutine(TurnUICo());
     }
 
     public void EndMyTurn()
     {
         isMyTurn = false;
-        StartCoroutine(MyTurnUICo());
 
+        Debug.Log("1");
+        if(GameManager.instance.isBaricate == false)
+        {
+            GameManager.instance.defense = 0;
+        }
+        Debug.Log("2");
+        
+        GameManager.instance.EndTurn();
+        playerDeck.DiscardAll();
+
+        StartCoroutine(TurnUICo());
+        Debug.Log("3");
+        StartMonsterTurn();
     }
 
-    public void EndOponentTurn()
+    public void EndOpponentTurn()
     {
         isMyTurn = true;
         myTurn += 1;
-        currentMana = maxMana;
-        StartCoroutine(MyTurnUICo());
+        foreach(Monster monster in monsters)
+        { 
+            monster.EndTurn();
+        }
+
+        //monster.EndTurn();
+        StartCoroutine(TurnUICo());
+        StartPlayerTurn();
     }
 
-    public IEnumerator MyTurnUICo()
+    IEnumerator TurnUICo()
     {
-        if(isMyTurn)
+        if (isMyTurn)
         {
-            myturnImage.SetActive(true);
-            turncountText.text = $"{myTurn}턴";
+            yield return new WaitForSeconds(0.5f);
+            myTurnImage.SetActive(true);
+            turnCountText.text = $"{myTurn}턴";
             yield return new WaitForSeconds(1.5f);
-            myturnImage.SetActive(false);
+            myTurnImage.SetActive(false);
         }
         else
         {
-            enemyturnImage.SetActive(true);
+            yield return new WaitForSeconds(0.5f);
+            enemyTurnImage.SetActive(true);
             yield return new WaitForSeconds(1.5f);
-            enemyturnImage.SetActive(false);
+            enemyTurnImage.SetActive(false);
         }
+    }
 
+    IEnumerator StartUICo()
+    {
 
+        startCombatImage.SetActive(true);
+        
+        yield return new WaitForSeconds(1.5f);
+        startCombatImage.SetActive(false);
+
+    }
+
+    void StartPlayerTurn()
+    {
+        Debug.Log("Player's Turn Started");
+        
+        GameManager.instance.InitMana();
+        playerDeck.DrawInitialHand();
+        // 플레이어 턴 초기화 작업 추가
+        //GameManager.instance.currentMana = 
+    }
+
+    void StartMonsterTurn()
+    {
+        //InitializeMonster();
+
+        Debug.Log("Monster's Turn Started");
+        
+        foreach(Monster monster in monsters)
+        {
+            monster.Attack(GameManager.instance);
+        }
         
 
+        //monsterPatternHandler.ApplyPatterns();
+        Invoke("EndOpponentTurn", 2.0f); // 2초 후 턴 전환
+    }
 
-        // 로그 출력
+    void InitializeMonster()
+    {
+
+        monsters = new List<Monster>(FindObjectsOfType<Monster>());
+
+        foreach(Monster monster in monsters)
+        {
+            monster.OnMonsterDeath += HandleMonsterDeath;
+        }
+
+
+
+        if (monsters.Count == 0)
+        {
+            Debug.LogWarning("No monsters found in the scene!");
+        }
+        else
+        {
+            Debug.Log(monsters.Count + " monsters found in the scene.");
+        }
+    }
+
+    public void UpdateManaText(int maxMana, int currentMana)
+    {
+        manaText.text = $"{currentMana}/{maxMana}";
+    }
+
+    private void HandleMonsterDeath(Monster monster)
+    {
+        monsters.Remove(monster);
         
-    }
 
-}
-
-public class TurnStateMachine
-{
-    private IState currentState;
-
-    public void ChangeState(IState newState)
-    {
-        if (currentState != null)
+        if(monsters.Count == 0)
         {
-            currentState.Exit();
+            GameManager.instance.MapStateMachine.ChangeState(new SelectableState());
         }
 
-        currentState = newState;
-        currentState.Enter();
+
     }
 
-    public void Update()
-    {
-        if (currentState != null)
-        {
-            currentState.Execute();
-        }
-    }
+
 }
-
-
-
-

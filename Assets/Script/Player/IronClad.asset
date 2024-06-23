@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: IronClad
   m_EditorClassIdentifier: 
   characterName: Ironclad
-  maxHealth: 75
-  startingGold: 50
+  maxHealth: 80
+  startingGold: 99
   startMana: 3
   playerPower: 0
   playerSpeed: 0

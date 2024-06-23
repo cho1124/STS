@@ -6,6 +6,7 @@ public abstract class StatusEffect : ScriptableObject
 {
     public string effectName;
     public int duration;
+    
 
     public abstract void ApplyEffect(Character character);
     public abstract void RemoveEffect(Character character);
@@ -33,16 +34,38 @@ public class WeaknessEffect : StatusEffect
 public class VulnerabilityEffect : StatusEffect
 {
     public int defenseReduction;
+    public float damageMultiplier = 1.75f;
 
     public override void ApplyEffect(Character character)
     {
-        character.defense -= defenseReduction;
-        Debug.Log(character.name + " is vulnerable. Defense reduced by " + defenseReduction);
+        //character.defense -= defenseReduction;
+        character.damageTakenMultiplier *= damageMultiplier; // 데미지 증가 비율 적용
+        //Debug.Log(character.name + " is vulnerable. Defense reduced by " + defenseReduction + " and damage taken increased by " + (damageMultiplier - 1) * 100 + "%.");
     }
 
     public override void RemoveEffect(Character character)
     {
-        character.defense += defenseReduction;
-        Debug.Log(character.name + " is no longer vulnerable. Defense restored by " + defenseReduction);
+        //character.defense += defenseReduction;
+        character.damageTakenMultiplier /= damageMultiplier; // 데미지 증가 비율 제거
+       Debug.Log(character.name + " is no longer vulnerable. Defense restored by " + defenseReduction + " and damage taken normalized.");
+    }
+}
+
+[CreateAssetMenu(fileName = "NewBariCateEffect", menuName = "Status Effects/BatriCate", order = 3)]
+public class BariCateEffect : StatusEffect
+{
+    //public int defenseReduction;
+    //public float damageMultiplier = 1.75f;
+
+    public override void ApplyEffect(Character character)
+    {
+        character.isBaricate = true;
+        //character.damageTakenMultiplier *= damageMultiplier; // 데미지 증가 비율 적용
+        //Debug.Log(character.name + " is vulnerable. Defense reduced by " + defenseReduction + " and damage taken increased by " + (damageMultiplier - 1) * 100 + "%.");
+    }
+
+    public override void RemoveEffect(Character character)
+    {
+        
     }
 }

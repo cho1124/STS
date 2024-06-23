@@ -251,8 +251,8 @@ MonoBehaviour:
   healthText: {fileID: 1250125885}
   goldText: {fileID: 1021085637}
   floorText: {fileID: 222024936}
-  ManaText: {fileID: 2096374779}
   DeckText: {fileID: 1100076298}
+  StartCombatUI: {fileID: 0}
 --- !u!1 &151130333
 GameObject:
   m_ObjectHideFlags: 0
@@ -264,6 +264,7 @@ GameObject:
   - component: {fileID: 151130336}
   - component: {fileID: 151130335}
   - component: {fileID: 151130334}
+  - component: {fileID: 151130337}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -337,6 +338,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &151130337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 151130333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1 &172503714
 GameObject:
   m_ObjectHideFlags: 0
@@ -815,7 +849,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &294605694
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1390,6 +1424,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53fcffe30a72de64abdd2f412405fa38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  monsterPool: []
+  elitemonsterPool: []
+  bossmonsterPool: []
+  inCombatList: []
 --- !u!1 &513391796
 GameObject:
   m_ObjectHideFlags: 0
@@ -1667,7 +1705,7 @@ MonoBehaviour:
   cardPrefab: {fileID: 1994322453092380239, guid: ba559f3bc26d5ad4daabe261687edfbc, type: 3}
   leftHandTr: {fileID: 377281754}
   RightHandTr: {fileID: 534892465}
-  baseDraw: 3
+  baseDraw: 5
   DeckCountText: {fileID: 2105367140}
   arrowPrefab: {fileID: 2552482984071468149, guid: 3810a39d4928b1f46b7b9440e06a080b, type: 3}
   selectedCard: {fileID: 0}
@@ -2855,13 +2893,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isMyTurn: 0
   myTurn: 0
+  playerDeck: {fileID: 0}
   turnText: {fileID: 354698580}
-  maxMana: 3
-  currentMana: 0
-  manatext: {fileID: 2096374779}
-  myturnImage: {fileID: 696808663}
-  enemyturnImage: {fileID: 172557584}
-  turncountText: {fileID: 2003407501}
+  manaText: {fileID: 2096374779}
+  myTurnImage: {fileID: 696808663}
+  enemyTurnImage: {fileID: 172557584}
+  startCombatImage: {fileID: 0}
+  turnCountText: {fileID: 2003407501}
+  monsterPatternHandler: {fileID: 0}
+  monsters: []
 --- !u!1 &1100076295
 GameObject:
   m_ObjectHideFlags: 0
@@ -3462,13 +3502,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 851826c8cceb1564cba5ca1bb996ad4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activeStatusEffects: []
+  characterName: 
+  maxHealth: 0
+  currentHealth: 0
+  attackPower: 0
+  defense: 0
+  damageTakenMultiplier: 1
+  isBaricate: 0
   playerData: {fileID: 11400000, guid: 5a1d4ed11cf88474d8d50cb163873dd2, type: 2}
   playerUIManager: {fileID: 126752911}
   playerDeckManager: {fileID: 513391798}
   mapManager: {fileID: 1014218357}
   monsterManager: {fileID: 443529338}
   MapLoader: {fileID: 1002370650}
-  player: {fileID: 0}
+  turnSystem: {fileID: 1049696384}
+  Animator: {fileID: 0}
+  currentMana: 0
+  isCombat: 0
+  healthTextPrefab: {fileID: 7925395616075727878, guid: ad033643bad9bf544ba84b4c4d8dacbf, type: 3}
 --- !u!4 &1409042907
 Transform:
   m_ObjectHideFlags: 0

@@ -16,7 +16,20 @@ public class PlayerDiscard : MonoBehaviour
     public void ClearDiscardPile()
     {
         discardedCards.Clear();
-        //Debug.Log("Discard pile cleared");
+        List<GameObject> objectsToDestroy = new List<GameObject>();
+
+        foreach (Transform child in transform)
+        {
+            if (child.gameObject.name.Contains("Card"))
+            {
+                objectsToDestroy.Add(child.gameObject);
+            }
+        }
+
+        foreach (GameObject obj in objectsToDestroy)
+        {
+            Destroy(obj);
+        }
     }
 
     public void UpdatediscardCount()

@@ -1,0 +1,372 @@
+
+title-packed.png
+size: 1924,1516
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+fg
+  rotate: false
+  xy: 2, 2
+  size: 1920, 626
+  orig: 1920, 626
+  offset: 0, 0
+  index: -1
+logo2
+  rotate: false
+  xy: 2, 630
+  size: 680, 550
+  orig: 680, 550
+  offset: 0, 0
+  index: -1
+mg1
+  rotate: false
+  xy: 2, 1182
+  size: 1920, 332
+  orig: 1920, 332
+  offset: 0, 0
+  index: -1
+
+title-packed2.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud1
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed3.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud2
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed4.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud3
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed5.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud4
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed6.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud5
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed7.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud6
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed8.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud7
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed9.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud8
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed10.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud9
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed11.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud10
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed12.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud11
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed13.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud12
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed14.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+midCloud13
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed15.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+topCloud1
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed16.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+topCloud2
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed17.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+topCloud3
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed18.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+topCloud4
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed19.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+topCloud5
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed20.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+topCloud6
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed21.png
+size: 1924,1270
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+topCloud7
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1266
+  orig: 1920, 1266
+  offset: 0, 0
+  index: -1
+
+title-packed22.png
+size: 1924,1994
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+mg2
+  rotate: false
+  xy: 2, 2
+  size: 1920, 848
+  orig: 1920, 848
+  offset: 0, 0
+  index: -1
+mg3Bot
+  rotate: false
+  xy: 2, 852
+  size: 1920, 1140
+  orig: 1920, 1140
+  offset: 0, 0
+  index: -1
+
+title-packed23.png
+size: 1924,1144
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+mg3BotGlow
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1140
+  orig: 1920, 1140
+  offset: 0, 0
+  index: -1
+
+title-packed24.png
+size: 1924,1144
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+mg3Top
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1140
+  orig: 1920, 1140
+  offset: 0, 0
+  index: -1
+
+title-packed25.png
+size: 1924,1144
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+mg3TopGlow1
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1140
+  orig: 1920, 1140
+  offset: 0, 0
+  index: -1
+
+title-packed26.png
+size: 1924,1144
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+mg3TopGlow2
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1140
+  orig: 1920, 1140
+  offset: 0, 0
+  index: -1
+
+title-packed27.png
+size: 1924,1473
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+jpg/sky
+  rotate: false
+  xy: 2, 2
+  size: 1920, 1469
+  orig: 1920, 1469
+  offset: 0, 0
+  index: -1

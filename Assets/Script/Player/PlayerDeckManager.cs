@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,27 +44,42 @@ public class PlayerDeckManager : MonoBehaviour
     public void InitializeDeck()
     {
         Deck.Clear();
-        int a;
+        //int a;
 
         // 여기서 플레이어 덱을 초기화하거나 불러오는 코드를 작성
         // 예를 들어, Deck.Add(CardDatabase.cardList[0]); 같은 코드들을 여기서 사용할 수 있음
-        for (int i = 0; i < 5; i++)
-        {
-            a = Random.Range(1, 22);
-            Deck.Add(CardDatabase.cardList[a]);
-        }
+        
 
         for (int i = 0; i < 5; i++)
         {
             Deck.Add(CardDatabase.cardList[10]);
         }
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < 4; i++)
         {
             Deck.Add(CardDatabase.cardList[0]);
         }
 
         Deck.Add(CardDatabase.cardList[1]);
     }
+
+    public List<Card> SelectableCards()
+    {
+
+        List<Card> asd = new List<Card>();
+
+        for(int i = 0; i < 3; i++)
+        {
+            asd.Add(CardDatabase.cardList[Random.Range(0, CardDatabase.cardList.Count)]);
+
+        }
+        return asd;
+
+
+
+
+    }
+
+
 
     // 덱을 반환하는 메서드
     public List<Card> GetDeck()

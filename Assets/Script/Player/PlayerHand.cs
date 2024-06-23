@@ -33,10 +33,27 @@ public class PlayerHand : MonoBehaviour
 
     public void ClearHand()
     {
+        // handCards 리스트를 비웁니다.
         handCards.Clear();
         Debug.Log("Hand cleared");
+
+        // 자식 오브젝트 중 이름이 "Card"인 오브젝트들을 제거합니다.
+        List<GameObject> objectsToDestroy = new List<GameObject>();
+
+        foreach (Transform child in transform)
+        {
+            if (child.gameObject.name.Contains("Card"))
+            {
+                objectsToDestroy.Add(child.gameObject);
+            }
+        }
+
+        foreach (GameObject obj in objectsToDestroy)
+        {
+            Destroy(obj);
+        }
     }
 
-    
+
 
 }

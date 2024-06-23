@@ -7,16 +7,15 @@ using System.IO;
 
 public class MonsterLoader : MonoBehaviour
 {
-    public string jsonFilePath = "Assets/MonsterData.json";
+    private string jsonFilePath = "MonsterData"; // 경로에서 확장자를 제거
 
     public Monsters LoadMonsterData()
     {
-       
+        TextAsset jsonFile = Resources.Load<TextAsset>(jsonFilePath);
 
-        if (File.Exists(jsonFilePath))
+        if (jsonFile != null)
         {
-            string jsonData = File.ReadAllText(jsonFilePath);
-            //Debug.Log("jsonData : " + jsonData);
+            string jsonData = jsonFile.text;
             return JsonUtility.FromJson<Monsters>(jsonData);
         }
         else

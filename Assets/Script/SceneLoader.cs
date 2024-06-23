@@ -19,8 +19,15 @@ public class SceneLoader : MonoBehaviour
         }
         else
         {
+            if(GameManager.instance.isCombat == true)
+            {
+                DownCanvas.SetActive(true);
+            }
+            
+
+
             Map.SetActive(false);
-            DownCanvas.SetActive(true);
+            
             returnScene.SetActive(false);
         }
 

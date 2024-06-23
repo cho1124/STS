@@ -1,3 +1,4 @@
+using DG.Tweening.Core.Easing;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,27 @@ public interface IState
     void Execute();
     void Exit();
 }
+
+public class SelectableState : IState
+{
+    private GameManager gameManager;
+
+    public void Enter()
+    {
+        
+    }
+
+    public void Execute()
+    {
+        //throw new System.NotImplementedException();
+    }
+
+    public void Exit()
+    {
+        //throw new System.NotImplementedException();
+    }
+}
+
 
 public class CombatState : IState
 {
@@ -22,12 +44,19 @@ public class CombatState : IState
     {
         Debug.Log("Entered Combat State");
 
+        
+
+
+
+
+        gameManager.isCombat = true;
         // 특정 UI 비활성화
         gameManager.MapLoader.HideNonCombatUI();
-
+        //gameManager.MapLoader.DownCanvas.SetActive(true);
         // 몬스터 생성
         gameManager.SpawnMonsters();
-
+        gameManager.InitMana();
+        gameManager.turnSystem.StartBattle();
         foreach (GameObject canMoveObj in gameManager.mapManager.canMoveList)
         {
             
@@ -48,7 +77,7 @@ public class CombatState : IState
     {
         //gameManager.mapManager.canMoveList;
         
-        // 전투 상태 동안 실행될 코드
+        
     }
 
     public void Exit()
@@ -59,7 +88,12 @@ public class CombatState : IState
         {
             gameManager.mapManager.canMoveList.Add(removedObj);
         }
+
+        gameManager.isCombat = false;
+        gameManager.MapLoader.DownCanvas.SetActive(false);
         
+        
+
 
         tempCanMoveList.Clear();
 
@@ -67,6 +101,7 @@ public class CombatState : IState
 
         // 전투 상태 종료 시 UI 복구 등 필요한 작업 수행
     }
+
 }
 
 public class RandomState : IState
@@ -176,10 +211,39 @@ public class ChestState : IState
 
 public class EliteState : IState
 {
+    private GameManager gameManager;
+    private List<GameObject> tempCanMoveList = new List<GameObject>();
+    public EliteState(GameManager gameManager)
+    {
+        this.gameManager = gameManager;
+    }
     public void Enter()
     {
-        Debug.Log("Entered Elite State");
-        // 엘리트 상태에 진입할 때 실행될 코드
+        Debug.Log("Entered Combat State");
+
+        // 특정 UI 비활성화
+        gameManager.isCombat = true;
+        gameManager.MapLoader.HideNonCombatUI();
+
+        // 몬스터 생성
+        gameManager.SpawnEliteMonsters();
+        gameManager.InitMana();
+        gameManager.turnSystem.StartBattle();
+
+        foreach (GameObject canMoveObj in gameManager.mapManager.canMoveList)
+        {
+
+            tempCanMoveList.Add(canMoveObj);
+
+        }
+
+        // 제거된 오브젝트들을 canMoveList에서 삭제
+        foreach (GameObject removedObj in tempCanMoveList)
+        {
+            gameManager.mapManager.canMoveList.Remove(removedObj);
+        }
+
+        //여기서 임시로 canMoveList만큼의 사이즈를 가진 임시 리스트를 만들어서 저장해 놓았다가
     }
 
     public void Execute()
@@ -190,16 +254,62 @@ public class EliteState : IState
     public void Exit()
     {
         Debug.Log("Exited Elite State");
+        
+        foreach (GameObject removedObj in tempCanMoveList)
+        {
+            gameManager.mapManager.canMoveList.Add(removedObj);
+        }
+
+        gameManager.isCombat = false;
+        gameManager.MapLoader.DownCanvas.SetActive(false);
+        tempCanMoveList.Clear();
         // 엘리트 상태를 종료할 때 실행될 코드
+
+        
     }
 }
 
+
+
+
+
+
 public class BossState : IState
 {
+    private GameManager gameManager;
+    private List<GameObject> tempCanMoveList = new List<GameObject>();
+    public BossState(GameManager gameManager)
+    {
+        this.gameManager = gameManager;
+    }
     public void Enter()
     {
-        Debug.Log("Entered Boss State");
-        // 보스 상태에 진입할 때 실행될 코드
+        Debug.Log("Entered Combat State");
+
+        gameManager.isCombat = true;
+        // 특정 UI 비활성화
+        gameManager.MapLoader.HideNonCombatUI();
+
+        // 몬스터 생성
+        gameManager.SpawnBossMonsters();
+        gameManager.InitMana();
+        gameManager.turnSystem.StartBattle();
+
+
+        foreach (GameObject canMoveObj in gameManager.mapManager.canMoveList)
+        {
+
+            tempCanMoveList.Add(canMoveObj);
+
+        }
+
+        // 제거된 오브젝트들을 canMoveList에서 삭제
+        foreach (GameObject removedObj in tempCanMoveList)
+        {
+            gameManager.mapManager.canMoveList.Remove(removedObj);
+        }
+
+        //여기서 임시로 canMoveList만큼의 사이즈를 가진 임시 리스트를 만들어서 저장해 놓았다가
     }
 
     public void Execute()
@@ -209,6 +319,9 @@ public class BossState : IState
 
     public void Exit()
     {
+        
+        
+
         Debug.Log("Exited Boss State");
         // 보스 상태를 종료할 때 실행될 코드
     }
@@ -245,10 +358,9 @@ public class MapStateMachine
 
 
 
-
 public class MapInterface : MonoBehaviour
 {
-    // Start is called before the first frame update
+     
     void Start()
     {
         

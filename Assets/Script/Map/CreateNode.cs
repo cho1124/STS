@@ -134,17 +134,17 @@ public class CreateNode : MonoBehaviour
                             GameManager.instance.MapStateMachine.ChangeState(new ChestState());
                             break;
                         case "Elite":
-                            GameManager.instance.MapStateMachine.ChangeState(new EliteState());
+                            GameManager.instance.MapStateMachine.ChangeState(new EliteState(GameManager.instance));
                             break;
                         case "Boss":
-                            GameManager.instance.MapStateMachine.ChangeState(new BossState());
+                            GameManager.instance.MapStateMachine.ChangeState(new BossState(GameManager.instance));
                             break;
                         default:
                             Debug.Log("Unknown state.");
                             break;
                     }
 
-
+                    GameManager.instance.AdvanceFloor();
 
                     
                 }
