@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+
 
 public enum NodeType
 {
@@ -17,5 +19,8 @@ public class Node : ScriptableObject
     public NodeType nodeType;
     public string nodeName;
     public GameObject nodeprefab;
+
+
+    
 
 }

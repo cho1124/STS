@@ -346,13 +346,6 @@ public class MapStateMachine
         }
     }
 
-    public void Update()
-    {
-        if (currentState != null)
-        {
-            currentState.Execute();
-        }
-    }
 }
 
 

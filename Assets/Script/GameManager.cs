@@ -27,8 +27,6 @@ public class GameManager : Character
 
     public GameObject healthTextPrefab; // 체력 텍스트 프리팹
 
-
-
     private void Awake()
     {
         if (instance == null)
